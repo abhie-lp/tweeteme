@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block extra_script %}
+  <script>
+    $(document).ready(function() {
+        loadContent("#tweet-container", "/tweet-api")
+    })
+  </script>
+{% endblock extra_script %}
+
+{% block container %}
+  <div id="tweet-container">
+    <h1>Tweets</h1><br>
+  </div>
+{% endblock container %}
