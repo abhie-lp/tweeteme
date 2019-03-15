@@ -1,8 +1,10 @@
 function loadContent(content_div, get_url) {
 
+    const apiURL = get_url + currentURL.pathname;
+    console.log("apiURL: ", apiURL);
 
     // function to attach the content to the content div
-    function attachContent(data) {
+    function attachContent(data, prepend=false) {
         data.forEach(function(d) {
             const contentId = d.id;
             const content = d.content;
@@ -22,10 +24,9 @@ function loadContent(content_div, get_url) {
 
 
     // AJAX call to get all the content from the api call
-    console.log("API: ", get_url);
-    console.log("URL: ", currentURL.pathname);
+
     $.ajax({
-        url: get_url + currentURL.pathname,
+        url: apiURL,
         method: "GET",
         success: function(data) {
             console.log("Fetching data successfull");
@@ -36,5 +37,27 @@ function loadContent(content_div, get_url) {
             console.log("errrr");
             console.log(err);
         }
+    })
+
+
+    // AJAX call for tweet-form
+    $("#tweet-form").submit(function(e) {
+        e.preventDefault();
+        const this_ = $(this);
+        console.log("Tweeting");
+
+        $.ajax({
+            url: apiURL,
+            data: this_.serialize(),
+            method: "POST",
+            success: function(data) {
+                console.log("Tweeted");
+                console.log(data);
+            },
+            error: function(err) {
+                console.log("errrr in tweeting");
+                console.log(err);
+            }
+        })
     })
 }
