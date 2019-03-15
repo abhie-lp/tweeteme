@@ -11,5 +11,10 @@
 {% block container %}
   <div id="tweet-container">
     <h1>Tweets</h1><br>
+    <form id="tweet-form" method="post">
+      {% csrf_token %}
+      {{ tweet_form }}<br>
+      <button class="btn btn-primary mb-2" type="submit">Tweet</button>
+    </form>
   </div>
 {% endblock container %}
