@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 
@@ -13,3 +14,6 @@ class Tweet(models.Model):
 
     def __str__(self):
         return self.content
+
+    def get_absolute_url(self):
+        return reverse("tweet:detail", args=[self.id])
