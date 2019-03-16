@@ -11,7 +11,7 @@
       <div class="row">
         <div class="col-sm-4" style="background-color: blue">
           {% block user %}
-            <div class="card text-center" style=";">
+            <div class="card text-center">
               <!-- <img src="..." class="card-img-top" alt="..."> -->
               <div class="card-body">
                 <h5 class="card-title">{{request.user.get_full_name}}</h5>
@@ -21,7 +21,7 @@
             </div>
           {% endblock user %}
         </div>
-        <div class="col-sm-8" style="background-color: green">
+        <div class="col-sm-8" style="background-color: lightgray">
           {% block container %}
           {% endblock container %}
         </div>
