@@ -9,12 +9,16 @@ function loadContent(content_div, get_url) {
             const contentId = d.id;
             const content = d.content;
             const contentUser = d.user;
-            const time = d.created_on;
+            const time = d.date_display;
             let contentHTML = `
                         <div class="media">
                           <div class="media-body">
-                          <strong>${content}</strong><br>
-                          <a href="#">View</a> | <a href="#user">${contentUser.username}</a> | ${time}
+                           <a class="text-dark font-weight-bold" href="#user">${contentUser.get_full_name}</a> <span 
+                           class="text-muted"> 
+                            @${contentUser.username} &middot; 
+${time}</span>
+                          <p class="tweet-content" data-id="${contentId}">${content}</p>
+                          <a class="tweet-detail-link" href="#">View</a> |
                           </div>
                         </div><hr>
                         `;
@@ -65,4 +69,33 @@ function loadContent(content_div, get_url) {
             }
         })
     });
+
+
+    // Handle the view click of tweet
+    $(document.body).on("click", "a.tweet-detail-link", function(event) {
+        event.preventDefault();
+        const this_ = $(this);
+        console.log("View tweet");
+
+        $.ajax({
+            url: apiURL + this_.prev().attr("data-id") + "/",
+            method: "GET",
+            success: function(data) {
+                console.log("Fetched single tweet");
+                const contentUser = data.user;
+                const content = data.content;
+                const time = data.created_on;
+
+                $(".modal .modal-title").html(`<span class="text-dark">${contentUser.get_full_name}</span><br>
+<small class="text-muted font-weight-light">@${contentUser.username}</small><br><span class="font-weight-bold">
+${content}</span><br><small class="text-muted">${time}</small>`);
+
+                $(".modal").modal();
+            },
+            error: function(err) {
+                console.log("Err in single tweet");
+                console.log(err);
+            }
+        })
+    })
 }
