@@ -14,7 +14,7 @@ function loadContent(content_div, get_url) {
                         <div class="media">
                           <div class="media-body">
                           <strong>${content}</strong><br>
-                          <a href="#">View</a> | <a href="#user">${contentUser}</a> | ${time}
+                          <a href="#">View</a> | <a href="#user">${contentUser.username}</a> | ${time}
                           </div>
                         </div><hr>
                         `;
