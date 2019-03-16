@@ -10,15 +10,19 @@ function loadContent(content_div, get_url) {
             const content = d.content;
             const contentUser = d.user;
             const time = d.created_on;
-
-            $(content_div).append(`
-            <div class="media">
-              <div class="media-body">
-              <strong>${content}</strong><br>
-              <a href="#">View</a> | <a href="#user">${contentUser}</a> | ${time}
-              </div>
-            </div><hr>
-            `)
+            let contentHTML = `
+                        <div class="media">
+                          <div class="media-body">
+                          <strong>${content}</strong><br>
+                          <a href="#">View</a> | <a href="#user">${contentUser}</a> | ${time}
+                          </div>
+                        </div><hr>
+                        `;
+            if (prepend) {
+                $(content_div).prepend(contentHTML);
+            } else {
+                $(content_div).append(contentHTML);
+            }
         })
     }
 
@@ -37,7 +41,7 @@ function loadContent(content_div, get_url) {
             console.log("errrr");
             console.log(err);
         }
-    })
+    });
 
 
     // AJAX call for tweet-form
@@ -52,12 +56,13 @@ function loadContent(content_div, get_url) {
             method: "POST",
             success: function(data) {
                 console.log("Tweeted");
-                console.log(data);
+                attachContent([data], true);
+                this_.find("textarea").val("");
             },
             error: function(err) {
                 console.log("errrr in tweeting");
                 console.log(err);
             }
         })
-    })
+    });
 }
