@@ -4,7 +4,7 @@ function loadContent(content_div, get_url) {
     let nextPageURL = null;
     console.log("apiURL: ", apiURL);
 
-    // function to attach the content to the content div
+    /* ############################ ATTACH CONTENT TO THE CONTAINER ##################################### */
     function attachContent(data, prepend=false) {
         data.forEach(function(d) {
             const contentId = d.id;
@@ -31,8 +31,7 @@ function loadContent(content_div, get_url) {
     }
 
 
-    // AJAX call to get all the content from the api call
-
+    /* ########################### GET CONTENT FROM API ############################### */
     $.ajax({
         url: apiURL,
         method: "GET",
@@ -52,6 +51,7 @@ function loadContent(content_div, get_url) {
     });
 
 
+    /* ################################ LOAD MORE ################################## */
     // AJAX to handle loadmore click
     $(".loadmore").click(function(event) {
         event.preventDefault();
@@ -74,7 +74,7 @@ function loadContent(content_div, get_url) {
     });
 
 
-    // AJAX call for tweet-form
+    /* ###################################### TWEET FORM SUBMIT #################################### */
     $("#tweet-form").submit(function(e) {
         e.preventDefault();
         const this_ = $(this);
@@ -87,6 +87,7 @@ function loadContent(content_div, get_url) {
                 console.log("Tweeted");
                 attachContent([data], true);
                 this_.find("textarea").val("");
+                this_.children(".tweet-characterCount").text(140);
             },
             error: function(err) {
                 console.log("errrr in tweeting");
@@ -96,7 +97,7 @@ function loadContent(content_div, get_url) {
     });
 
 
-    // Handle the view click of tweet
+    /* ################################### TWEET DETAIL VIEW LINK ###################################### */
     $(document.body).on("click", "a.tweet-detail-link", function(event) {
         event.preventDefault();
         const this_ = $(this);
@@ -124,6 +125,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     });
 
 
+    /* ############################### CONTENT DELETE CLICK ############################### */
     // Handle the tweet delete click
     $(document.body).on("click", "a.tweet-delete-link", function(event) {
         event.preventDefault();
@@ -138,7 +140,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     });
 
 
-    // Handle the modal-delete submission
+    /* ################################## DELETE FORM SUBMIT ############################## */
     $(".modal-delete form").submit(function(event) {
         event.preventDefault();
         const csrf = $(this).children("input").attr("value");
