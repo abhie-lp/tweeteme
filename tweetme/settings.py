@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "tweets.apps.TweetsConfig",
+    "accounts.apps.AccountsConfig",
     "rest_framework"
 ]
 
