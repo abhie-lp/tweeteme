@@ -11,5 +11,6 @@ class TweetForm(forms.ModelForm):
         widgets = {"content": forms.Textarea(attrs={
             "placeholder": "Your tweet",
             "class": "form-control form-group",
-            "rows": 5,
+            "rows": 4,
+            "oninput": "charsLeft(this);"
         })}

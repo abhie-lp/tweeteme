@@ -12,8 +12,8 @@
   <h1>Tweets</h1><br>
   <form id="tweet-form" method="post">
     {% csrf_token %}
-    {{ tweet_form }}<br>
-    <button class="btn btn-primary mb-2" type="submit">Tweet</button>
+    {{ tweet_form }}
+    <button class="btn btn-primary mb-2" type="submit">Tweet</button> <span class="ml-2 tweet-characterCount">140</span>
   </form>
   <div id="tweet-container">
   </div>
