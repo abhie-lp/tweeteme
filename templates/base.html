@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   </head>
 
-  <body class="bg-light" style="margin: 1%">
-    <div class="container-fluid">
+  <body class="bg-light">
+    <div class="container">
       <div class="row">
         <div class="col-sm-4" style="background-color: blue">
           {% block user %}
@@ -27,9 +27,13 @@
         </div>
       </div>
     </div>
+    {% include 'modal_form.html' %}
+    {% include "delete_modal.html" %}
     <script>
       const currentURL = window.location;
       const logged_user = "{{ request.user }}";
+      let contentID;
+      let contentArea;
     </script>
     <script src="{% static 'js/google-jq.js' %}"></script>
     <script src="{% static 'js/tweet.js' %}"></script>
