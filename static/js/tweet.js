@@ -1,6 +1,7 @@
 function loadContent(content_div, get_url) {
 
     const apiURL = get_url + currentURL.pathname;
+    let nextPageURL = null;
     console.log("apiURL: ", apiURL);
 
     // function to attach the content to the content div
@@ -36,9 +37,13 @@ function loadContent(content_div, get_url) {
         url: apiURL,
         method: "GET",
         success: function(data) {
-            console.log("Fetching data successfull");
-            console.log(data);
-            attachContent(data)
+            console.log("Fetched ", data.results.length);
+            attachContent(data.results)
+            if (data.next) {
+                nextPageURL = data.next;
+            } else {
+                $(".loadmore").remove();
+            }
         },
         error: function(err) {
             console.log("errrr");
@@ -47,11 +52,32 @@ function loadContent(content_div, get_url) {
     });
 
 
+    // AJAX to handle loadmore click
+    $(".loadmore").click(function(event) {
+        event.preventDefault();
+       console.log("loading more");
+
+       $.ajax(nextPageURL, {
+           method: "GET",
+           success: function(data) {
+               attachContent(data.results);
+               nextPageURL = data.next;
+               if (!nextPageURL) {
+                   $(".loadmore").remove();
+               }
+           },
+           error: function(err) {
+               console.log("Errrr in loadmore");
+               console.log(err);
+           }
+       })
+    });
+
+
     // AJAX call for tweet-form
     $("#tweet-form").submit(function(e) {
         e.preventDefault();
         const this_ = $(this);
-        console.log("Tweeting");
 
         $.ajax({
             url: apiURL,
@@ -74,7 +100,6 @@ function loadContent(content_div, get_url) {
     $(document.body).on("click", "a.tweet-detail-link", function(event) {
         event.preventDefault();
         const this_ = $(this);
-        console.log("View tweet");
 
         $.ajax({
             url: apiURL + this_.prev().attr("data-id") + "/",
@@ -102,14 +127,13 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     // Handle the tweet delete click
     $(document.body).on("click", "a.tweet-delete-link", function(event) {
         event.preventDefault();
-        console.log("Delete the tweet");
         const this_ = $(this);
         contentID = this_.parent().children("p.tweet-content").attr("data-id");
+        console.log("Delete the tweet ", contentID, "????");
         const thisContent = this_.parent().find(".tweet-content").text();
         const deleteModal = $(".modal-delete");
         deleteModal.find("h5.modal-title").html(`<span class="text-danger font-weight-bold">Delete:</span> <span class="font-weight-bold">${thisContent}</span>`);
         deleteModal.modal();
-        console.log("id to delete: ", contentID);
         contentArea = [this_.parent().parent(), this_.parent().parent().next()];
     });
 
@@ -117,7 +141,6 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     // Handle the modal-delete submission
     $(".modal-delete form").submit(function(event) {
         event.preventDefault();
-        console.log("confirm delete tweet");
         const csrf = $(this).children("input").attr("value");
 
         $.ajax(apiURL + contentID, {
@@ -125,7 +148,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
             headers: {"X-CSRFToken": csrf},
             content: "application/json",
             success: function(data) {
-                console.log("Deletion successfull");
+                console.log("Deletion successfull: ", contentID);
                 $(".modal-delete").modal("hide");
                 contentArea.forEach(function(ele) {
                     ele.remove();
