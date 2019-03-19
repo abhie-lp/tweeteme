@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.db.models.signals import post_save
 
 from PIL import Image
 
@@ -68,3 +69,11 @@ class UserProfile(models.Model):
         self.profile_thumb.delete(False)
         self.profile_pic.delete(False)
         super(UserProfile, self).delete(using=None, keep_parents=False)
+
+
+def new_profile(sender, instance, created, *args, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+
+post_save.connect(new_profile, sender=User)
