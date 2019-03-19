@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "tweets.apps.TweetsConfig",
     "accounts.apps.AccountsConfig",
-    "rest_framework"
+    "rest_framework",
+    "crispy_forms",
 ]
 
 MIDDLEWARE = [
@@ -113,3 +114,10 @@ STATICFILES_DIRS = os.path.join(BASE_DIR, "static"),
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "tweet:list"
+LOGOUT_URL = "logout"
+LOGOUT_REDIRECT_URL = "user:login"
