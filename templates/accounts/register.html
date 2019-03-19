@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}
+  Register - TweetMe
+{% endblock title %}
+
+{% block display %}
+  <div class="col-md-6 offset-md-3">
+  <h1 class="text-center">Register</h1>
+    <form class="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="col-md-10 text-center">
+          <button class="col-5 offset-3 form-group btn btn-primary" type="submit">Register</button>
+          <p>Already have an account?? <a href="{% url 'user:login' %}">Login</a></p>
+        </div>
+      </form>
+  </div>
+{% endblock display %}
