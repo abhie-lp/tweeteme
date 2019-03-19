@@ -4,11 +4,18 @@
   <head>
     <title>{% block title %}TweetMe{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <style>
+      [id^=hint_] {
+        display: none;
+      }
+    </style>
+
   </head>
 
-  <body class="bg-light">
+  <body style="background-color: lightblue;">
     <div class="container">
       <div class="row">
+    {% block display %}
         <div class="col-sm-4" style="background-color: blue">
           {% block user %}
             <div class="card text-center">
@@ -21,14 +28,15 @@
             </div>
           {% endblock user %}
         </div>
-        <div class="col-sm-8" style="background-color: lightgray">
+        <div class="col-sm-8 bg-light">
           {% block container %}
           {% endblock container %}
         </div>
-      </div>
-    </div>
     {% include 'modal_form.html' %}
     {% include "delete_modal.html" %}
+    {% endblock display %}
+      </div>
+    </div>
     <script>
       const currentURL = window.location;
       const logged_user = "{{ request.user }}";
