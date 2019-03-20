@@ -1,4 +1,4 @@
-from ..models import Tweet
+from .. import models
 
 from django.contrib.auth.models import User
 from django.contrib.humanize.templatetags.humanize import naturaltime
@@ -19,19 +19,43 @@ class TweetSerializer(serializers.ModelSerializer):
     date_display = serializers.SerializerMethodField()
 
     class Meta:
-        model = Tweet
-        fields = "id", "content", "user", "created_on", "date_display",
+        model = models.Tweet
+        fields = "id", "content", "created_on", "date_display", "user",
 
     def get_created_on(self, obj):
         return obj.created_on.strftime("%I:%M %p - %d %b %Y")
 
     def get_date_display(self, obj):
         obj_date = obj.created_on
-        print(obj_date)
         days = (timezone.datetime.now() - obj_date).days
-        print(days)
         if days > 0:
             return obj_date.strftime("%d %b")
         else:
-
             return naturaltime(obj_date)
+
+
+class RetweetSerializer(serializers.ModelSerializer):
+    parent_tweet = TweetSerializer()
+    user = UserSerializer(read_only=True)
+    date_display = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Retweet
+        fields = "id", "parent_tweet", "user", "date_display",
+
+    def get_date_display(self, obj):
+        obj_date = obj.created_on
+        days = (timezone.datetime.now() - obj_date).days
+        if days > 0:
+            return obj_date.strftime("%d %b")
+        else:
+            return naturaltime(obj_date)
+
+
+class PostSerializer(serializers.ModelSerializer):
+    tweet = TweetSerializer()
+    retweet = RetweetSerializer()
+
+    class Meta:
+        model = models.Post
+        fields = "tweet", "retweet"
