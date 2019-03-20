@@ -6,3 +6,11 @@ function charsLeft(val) {
     let charsLeft = maxChars - this_.val().length;
     this_.parent().children(".tweet-characterCount").text(charsLeft);
 }
+
+
+/* ###################################### COLLAPSE NAVBAR ###################################### */
+$(document).click(function(e) {
+	if (!$(e.target).is('.container')) {
+    	$('.collapse').collapse('hide');
+    }
+});
