@@ -3,18 +3,20 @@
 {% block extra_script %}
   <script>
     $(document).ready(function() {
-        loadContent("#tweet-container", "/tweet-api")
+        loadContent("#tweet-container", "/tweet-api");
     })
   </script>
 {% endblock extra_script %}
 
 {% block container %}
   <h1>Tweets</h1><br>
-  <form id="tweet-form" method="post">
-    {% csrf_token %}
-    {{ tweet_form }}
-    <button class="btn btn-primary mb-2" type="submit">Tweet</button> <span class="ml-2 tweet-characterCount">140</span>
-  </form>
+  {% if not request.GET.search %}
+    <form id="tweet-form" method="post">
+      {% csrf_token %}
+      {{ tweet_form }}
+      <button class="btn btn-primary mb-2" type="submit">Tweet</button> <span class="ml-2 tweet-characterCount">140</span>
+    </form>
+  {% endif %}
   <div id="tweet-container">
   </div>
   <p ><a class="loadmore" href="" >Load more</a></p>
