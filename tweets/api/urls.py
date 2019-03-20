@@ -4,6 +4,8 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register("tweet", views.TweetViewSet)
+router.register("retweet", views.RetweetViewSet)
+router.register("posts", views.PostListViewSet)
 
 app_name = "tweet_api"
 
