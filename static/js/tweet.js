@@ -1,8 +1,16 @@
 function loadContent(content_div, get_url) {
 
-    const apiURL = get_url + currentURL.pathname;
+    let apiURL = get_url + currentURL.pathname;
     let nextPageURL = null;
+    let extraURL = "";
+
+    if (currentURL.search.length > 8) {
+        console.log(currentURL.search);
+        extraURL = currentURL.search;
+    }
+
     console.log("apiURL: ", apiURL);
+    console.log("extraURL: ", extraURL);
 
     /* ############################ ATTACH CONTENT TO THE CONTAINER ##################################### */
     function attachContent(data, prepend=false) {
@@ -33,15 +41,20 @@ function loadContent(content_div, get_url) {
 
     /* ########################### GET CONTENT FROM API ############################### */
     $.ajax({
-        url: apiURL,
+        url: apiURL + extraURL,
         method: "GET",
         success: function(data) {
             console.log("Fetched ", data.results.length);
-            attachContent(data.results)
-            if (data.next) {
-                nextPageURL = data.next;
+            attachContent(data.results);
+            if (data.results.length > 0) {
+                if (data.next) {
+                    nextPageURL = data.next;
+                } else {
+                    $(".loadmore").remove();
+                }
             } else {
                 $(".loadmore").remove();
+                $(content_div).html("<p>No content to show</p>");
             }
         },
         error: function(err) {
@@ -108,10 +121,11 @@ function loadContent(content_div, get_url) {
             success: function(data) {
                 console.log("Fetched single tweet");
                 const contentUser = data.user;
+                console.log(contentUser);
                 const content = data.content;
                 const time = data.created_on;
 
-                $(".modal .modal-title").html(`<span class="text-dark">${contentUser.get_full_name}</span><br>
+                $(".modal-detail .modal-title").html(`<span class="text-dark">${contentUser.get_full_name}</span><br>
 <small class="text-muted font-weight-light">@${contentUser.username}</small><br><span class="font-weight-bold">
 ${content}</span><br><small class="text-muted">${time}</small>`);
 
