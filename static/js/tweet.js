@@ -129,7 +129,7 @@ function loadContent(content_div, get_url) {
     $("#tweet-form").submit(function(e) {
         e.preventDefault();
         const this_ = $(this);
-        completeURL += "model/tweet/";
+        completeURL = get_url + "model/tweet/";
 
         $.ajax({
             url: completeURL,
@@ -153,9 +153,10 @@ function loadContent(content_div, get_url) {
     $(document.body).on("click", "a.tweet-detail-link", function(event) {
         event.preventDefault();
         const this_ = $(this);
+        completeURL = get_url + "model/tweet/" + this_.prev().attr("data-id") + "/";
 
         $.ajax({
-            url: completeURL + this_.prev().attr("data-id") + "/",
+            url: completeURL,
             method: "GET",
             success: function(data) {
                 console.log("Fetched single tweet");
