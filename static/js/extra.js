@@ -24,6 +24,6 @@ $("#searchForm").submit(function(e) {
     if (this_.serialize().length > 7) {
         window.location = address.origin + address.pathname + "?" + this_.serialize();
     } else {
-        window.location = address.origin + "/tweet/";
+        window.location = address.origin + "/";
     }
 });

@@ -1,35 +1,73 @@
+/*
+ * content_div - id of the element where the cotent is to be attached
+ * get_url - url of the link where the GET request is to made
+*/
 function loadContent(content_div, get_url) {
 
-    let apiURL = get_url + currentURL.pathname;
+    let completeURL = get_url;
     let nextPageURL = null;
-    let extraURL = "";
 
     if (currentURL.search.length > 8) {
         console.log(currentURL.search);
-        extraURL = currentURL.search;
+        completeURL += currentURL.search;
     }
 
-    console.log("apiURL: ", apiURL);
-    console.log("extraURL: ", extraURL);
+    console.log("completeURL: ", completeURL);
+
+
+    /* ################################# RETUTRN TWEET OR RETWEET IN CORRECT FORMAT ########################## */
+   function tweetFormat(data) {
+       let tweetData = data.tweet;
+       let retweetData = null;
+       if (data.retweet != null) {
+           tweetData = data.retweet.parent_tweet;
+           retweetData = data.retweet;
+       }
+
+       const tweetId = tweetData.id;
+       const tweet = tweetData.content;
+       const tweetUser = tweetData.user;
+       const tweetTime = tweetData.date_display;
+
+       const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
+       const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
+       const tweetContentP = `<p class="tweet-content" data-id="${tweetId}">${tweet}</p>`;
+       const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
+       const tweetDeleteLink = `<a class="tweet-delete-link float-right text-danger" href="/delete/">Delete</a>`;
+       let mediaBody = null;
+
+       if (data.retweet != null) {
+           const retweetUser = retweetData.user;
+           const retweetTime = retweetData.date_display;
+           const retweetUserSpan = `<small class="text-muted"><a class="text-muted text-uppercase" href="/${retweetUser.username}/">${retweetUser.get_full_name}</a> Retweeted</small>`;
+           const retweetTimeSpan = `<small class="text-muted">${retweetTime}</small>`;
+           mediaBody = `
+            <div class="media-body">
+              <span class="text-muted">${retweetUserSpan} &middot; ${retweetTimeSpan}</span><br>
+              <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
+              ${tweetContentP}
+              ${tweetViewLink} ${tweetDeleteLink}
+            </div>`;
+       } else {
+           mediaBody = `
+           <div class="media-body">
+             <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
+             ${tweetContentP}
+             ${tweetViewLink} ${tweetDeleteLink}
+           </div>`;
+       }
+
+       const mediaDiv = `<div class="media">${mediaBody}</div>`;
+       return mediaDiv;
+
+   }
+
 
     /* ############################ ATTACH CONTENT TO THE CONTAINER ##################################### */
     function attachContent(data, prepend=false) {
         data.forEach(function(d) {
-            const contentId = d.id;
-            const content = d.content;
-            const contentUser = d.user;
-            const time = d.date_display;
-            let contentHTML = `
-                        <div class="media">
-                          <div class="media-body">
-                           <a class="text-dark font-weight-bold" href="#user">${contentUser.get_full_name}</a> <span 
-                           class="text-muted"> 
-                            @${contentUser.username} &middot; ${time}</span>
-                          <p class="tweet-content" data-id="${contentId}">${content}</p>
-                          <a class="tweet-detail-link" href="#">View</a> | <a class="tweet-delete-link float-right text-danger" href="">Delete</a>
-                          </div>
-                        </div><hr>
-                        `;
+
+            let contentHTML = tweetFormat(d) + `<hr>`;
             if (prepend) {
                 $(content_div).prepend(contentHTML);
             } else {
@@ -41,11 +79,10 @@ function loadContent(content_div, get_url) {
 
     /* ########################### GET CONTENT FROM API ############################### */
     $.ajax({
-        url: apiURL + extraURL,
+        url: completeURL,
         method: "GET",
         success: function(data) {
             console.log("Fetched ", data.results.length);
-            attachContent(data.results);
             if (data.results.length > 0) {
                 if (data.next) {
                     nextPageURL = data.next;
@@ -56,6 +93,7 @@ function loadContent(content_div, get_url) {
                 $(".loadmore").remove();
                 $(content_div).html("<p>No content to show</p>");
             }
+            attachContent(data.results);
         },
         error: function(err) {
             console.log("errrr");
@@ -93,7 +131,7 @@ function loadContent(content_div, get_url) {
         const this_ = $(this);
 
         $.ajax({
-            url: apiURL,
+            url: completeURL,
             data: this_.serialize(),
             method: "POST",
             success: function(data) {
@@ -116,12 +154,11 @@ function loadContent(content_div, get_url) {
         const this_ = $(this);
 
         $.ajax({
-            url: apiURL + this_.prev().attr("data-id") + "/",
+            url: completeURL + this_.prev().attr("data-id") + "/",
             method: "GET",
             success: function(data) {
                 console.log("Fetched single tweet");
                 const contentUser = data.user;
-                console.log(contentUser);
                 const content = data.content;
                 const time = data.created_on;
 
@@ -159,7 +196,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
         event.preventDefault();
         const csrf = $(this).children("input").attr("value");
 
-        $.ajax(apiURL + contentID, {
+        $.ajax(completeURL + contentID, {
             method: "DELETE",
             headers: {"X-CSRFToken": csrf},
             content: "application/json",
