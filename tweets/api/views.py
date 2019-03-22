@@ -2,7 +2,7 @@ from .pagination import DefaultPagination
 from . import serializers
 from .. import models
 
-from rest_framework import filters, viewsets, mixins
+from rest_framework import filters, viewsets, generics
 
 
 class TweetViewSet(viewsets.ModelViewSet):
@@ -22,7 +22,7 @@ class RetweetViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPagination
 
 
-class PostListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class PostListAPIView(generics.ListAPIView):
     serializer_class = serializers.PostSerializer
     queryset = models.Post.objects.all()
     pagination_class = DefaultPagination
