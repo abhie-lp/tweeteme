@@ -33,6 +33,7 @@ function loadContent(content_div, get_url) {
        const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
        const tweetContentP = `<p class="tweet-content" data-id="${tweetId}">${tweet}</p>`;
        const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
+       const tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
        const tweetDeleteLink = `<a class="tweet-delete-link float-right text-danger" href="/delete/">Delete</a>`;
        let mediaBody = null;
 
@@ -46,14 +47,14 @@ function loadContent(content_div, get_url) {
               <span class="text-muted">${retweetUserSpan} &middot; ${retweetTimeSpan}</span><br>
               <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
               ${tweetContentP}
-              ${tweetViewLink} ${tweetDeleteLink}
+              ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetDeleteLink}
             </div>`;
        } else {
            mediaBody = `
            <div class="media-body">
              <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
              ${tweetContentP}
-             ${tweetViewLink} ${tweetDeleteLink}
+             ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetDeleteLink}
            </div>`;
        }
 
@@ -197,6 +198,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     $(".modal-delete form").submit(function(event) {
         event.preventDefault();
         const csrf = $(this).children("input").attr("value");
+        console.log(csrf);
         completeURL = get_url + "model/tweet/" + contentID + "/";
 
         $.ajax(completeURL, {
@@ -212,6 +214,30 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
             },
             error: function(err) {
                 console.log("Err in deletion");
+                console.log(err);
+            }
+        })
+    });
+
+
+    /* ################################## TWEET RETWEET ############################## */
+    $(document.body).on("click", "a.tweet-retweet-link", function(e) {
+        e.preventDefault();
+        const this_ = $(this);
+        console.log("Retweet");
+        const parent_tweet = this_.prev().prev().attr("data-id");
+        console.log(parent_tweet);
+        completeURL = get_url + "model/retweet/";
+        $.ajax(completeURL, {
+            method: "POST",
+            data: {"parent_tweet": parent_tweet},
+            headers: {"X-CSRFToken": csrftoken},
+            success: function(data) {
+                console.log("Retweeted successfuly");
+                attachContent([{"retweet": data}], true);
+            },
+            error: function(err) {
+                console.log("Err in retweet");
                 console.log(err);
             }
         })
