@@ -44,10 +44,11 @@
       const logged_user = "{{ request.user }}";
       let contentID;
       let contentArea;
+      let csrftoken = null;
     </script>
     <script src="{% static 'js/google-jq.js' %}"></script>
-    <script src="{% static 'js/tweet.js' %}"></script>
     <script src="{% static 'js/extra.js' %}"></script>
+    <script src="{% static 'js/tweet.js' %}"></script>
     <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     {% block extra_script %}
