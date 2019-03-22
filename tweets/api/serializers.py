@@ -35,7 +35,7 @@ class TweetSerializer(serializers.ModelSerializer):
 
 
 class RetweetSerializer(serializers.ModelSerializer):
-    parent_tweet = TweetSerializer()
+    parent_tweet = TweetSerializer(read_only=True)
     user = UserSerializer(read_only=True)
     date_display = serializers.SerializerMethodField()
 

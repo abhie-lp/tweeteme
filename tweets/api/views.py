@@ -20,6 +20,13 @@ class RetweetViewSet(viewsets.ModelViewSet):
     queryset = models.Retweet.objects.all()
     pagination_class = pagination.DefaultPagination
 
+    def perform_create(self, serializer):
+        print("in perform create")
+        parent_tweet_id = self.request.POST.get("parent_tweet")
+        print(parent_tweet_id)
+        parent_tweet = models.Tweet.objects.get(id=parent_tweet_id)
+        return serializer.save(parent_tweet=parent_tweet, user=self.request.user)
+
 
 class PostListAPIView(generics.ListAPIView):
     serializer_class = serializers.PostSerializer
