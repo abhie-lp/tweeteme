@@ -197,8 +197,9 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     $(".modal-delete form").submit(function(event) {
         event.preventDefault();
         const csrf = $(this).children("input").attr("value");
+        completeURL = get_url + "model/tweet/" + contentID + "/";
 
-        $.ajax(completeURL + contentID, {
+        $.ajax(completeURL, {
             method: "DELETE",
             headers: {"X-CSRFToken": csrf},
             content: "application/json",
