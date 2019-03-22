@@ -15,7 +15,7 @@ function loadContent(content_div, get_url) {
     console.log("completeURL: ", completeURL);
 
 
-    /* ################################# RETUTRN TWEET OR RETWEET IN CORRECT FORMAT ########################## */
+    /* ################################# RETURN TWEET OR RETWEET IN CORRECT FORMAT ########################## */
    function tweetFormat(data) {
        let tweetData = data.tweet;
        let retweetData = null;
@@ -129,6 +129,7 @@ function loadContent(content_div, get_url) {
     $("#tweet-form").submit(function(e) {
         e.preventDefault();
         const this_ = $(this);
+        completeURL += "model/tweet/";
 
         $.ajax({
             url: completeURL,
@@ -136,7 +137,7 @@ function loadContent(content_div, get_url) {
             method: "POST",
             success: function(data) {
                 console.log("Tweeted");
-                attachContent([data], true);
+                attachContent([{"tweet": data}], true);
                 this_.find("textarea").val("");
                 this_.children(".tweet-characterCount").text(140);
             },
