@@ -20,7 +20,7 @@ class TweetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Tweet
-        fields = "id", "content", "created_on", "date_display", "user",
+        fields = "id", "content", "created_on", "date_display", "user", "likes",
 
     def get_created_on(self, obj):
         return obj.created_on.strftime("%I:%M %p - %d %b %Y")

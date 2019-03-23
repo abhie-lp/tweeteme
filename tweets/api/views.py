@@ -1,7 +1,7 @@
 from . import pagination, serializers
 from .. import models
 
-from rest_framework import filters, viewsets, generics, response, exceptions
+from rest_framework import filters, viewsets, generics, response, exceptions, views
 
 
 class TweetViewSet(viewsets.ModelViewSet):
@@ -39,3 +39,13 @@ class PostListAPIView(generics.ListAPIView):
                      "user__username",
                      "user__first_name",
                      "user__last_name",)
+
+
+class TweetLikeAPIView(views.APIView):
+
+    def get(self, *args, **kwargs):
+        tweet_id = self.kwargs.get("tweet_id")
+        tweet_model = models.Tweet
+        tweet = tweet_model.objects.get(id=tweet_id)
+        liked = tweet_model.objects.like_toggle(user=self.request.user, tweet_obj=tweet)
+        return response.Response({"liked": liked})

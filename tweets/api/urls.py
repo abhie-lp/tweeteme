@@ -9,6 +9,7 @@ router.register("retweet", views.RetweetViewSet)
 app_name = "tweet_api"
 
 urlpatterns = [
+    path("like/<int:tweet_id>/", views.TweetLikeAPIView.as_view(), name="tweet_like"),
     path("model/", include(router.urls)),
     path("", views.PostListAPIView.as_view(), name="posts_list"),
 ]
