@@ -220,7 +220,6 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
         e.preventDefault();
         const csrf = $(this).children("input").attr("value");
         const actionVal = $(this).attr("action");
-        console.log(csrf);
         completeURL = get_url + `model/${actionVal}/${contentID}/`;
 
         $.ajax(completeURL, {
@@ -265,7 +264,6 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     $(document.body).on("submit", ".modal-retweet form.retweet", function(e) {
         e.preventDefault();
         const parent_tweet = contentID;
-        console.log(parent_tweet);
         const csrf = $(this).children("input").attr("value");
         completeURL = get_url + "model/retweet/";
         $.ajax(completeURL, {
@@ -278,8 +276,9 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
                 $(".modal-retweet").modal("hide");
             },
             error: function(err) {
+                $(".modal-retweet").modal("hide");
                 console.log("Err in retweet");
-                console.log(err);
+                alert(err.responseJSON);
             }
         })
     });

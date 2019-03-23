@@ -1,7 +1,7 @@
 from . import pagination, serializers
 from .. import models
 
-from rest_framework import filters, viewsets, generics
+from rest_framework import filters, viewsets, generics, response, exceptions
 
 
 class TweetViewSet(viewsets.ModelViewSet):
@@ -21,10 +21,11 @@ class RetweetViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.DefaultPagination
 
     def perform_create(self, serializer):
-        print("in perform create")
         parent_tweet_id = self.request.POST.get("parent_tweet")
-        print(parent_tweet_id)
         parent_tweet = models.Tweet.objects.get(id=parent_tweet_id)
+        retweeted_today = models.Retweet.objects.retweeted_today(user=self.request.user, parent_tweet=parent_tweet)
+        if retweeted_today:
+            raise exceptions.ValidationError("Already Retweeted today")
         return serializer.save(parent_tweet=parent_tweet, user=self.request.user)
 
 
