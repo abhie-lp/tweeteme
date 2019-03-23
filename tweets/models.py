@@ -30,6 +30,7 @@ class Tweet(Post):
     content = models.CharField(max_length=140)
     updated_on = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True)
+    retweets = models.PositiveIntegerField(default=0)
 
     objects = TweetManager()
 
@@ -57,6 +58,17 @@ class RetweetManager(models.Manager):
 class Retweet(Post):
     parent_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name="retweet")
     objects = RetweetManager()
+    
+    def save(self, *args, **kwargs):
+        if not getattr(self, "id"):
+            self.parent_tweet.retweets += 1
+            self.parent_tweet.save()
+        super(Retweet, self).save(*args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        self.parent_tweet.retweets -= 1
+        self.parent_tweet.save()
+        super(Retweet, self).delete(*args, **kwargs)
 
     def __str__(self):
         return self.parent_tweet.content
