@@ -13,10 +13,25 @@ class Post(models.Model):
         ordering = "-created_on", "user",
 
 
+class TweetManager(models.Manager):
+
+    def like_toggle(self, user, tweet_obj):
+        liked_by = tweet_obj.likes
+        user_liked = False
+        if user in liked_by.all():
+            liked_by.remove(user)
+        else:
+            liked_by.add(user)
+            user_liked = True
+        return user_liked
+
+
 class Tweet(Post):
     content = models.CharField(max_length=140)
     updated_on = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True)
+
+    objects = TweetManager()
 
     def __str__(self):
         return self.content
