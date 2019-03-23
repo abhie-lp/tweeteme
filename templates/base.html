@@ -41,7 +41,8 @@
     </div>
     <script>
       const currentURL = window.location;
-      const logged_user = "{{ request.user }}";
+      const loggedUser = "{{ request.user }}";
+      const loggedUserID = Number("{{ request.user.id }}");
       let contentID;
       let contentArea;
       let csrftoken = null;
