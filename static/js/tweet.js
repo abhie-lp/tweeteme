@@ -30,6 +30,7 @@ function loadContent(content_div, get_url) {
        const tweetTime = tweetData.date_display;
        const tweetLikes = tweetData.likes;
        const tweetLikesCount = tweetLikes.length;
+       const tweetRetweetsCount = tweetData.retweets;
 
        let likeText = "Like";
        tweetLikes.forEach(function(val) {
@@ -44,6 +45,7 @@ function loadContent(content_div, get_url) {
        const tweetContentP = `<p class="tweet-content">${tweet}</p>`;
        const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
        const tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
+       const tweetRetweetsCountSpan = `<small class="text-muted"><b>${tweetRetweetsCount}</b></small>`;
        const tweetLikeLink =  `<a class="tweet-like-link" href="/like/">${likeText}</a>`;
        const tweetLikesCountSpan = `<small class="text-muted"><b>${tweetLikesCount}</b></small>`;
        const tweetDeleteLink = `<a class="tweet-delete-link float-right text-danger" href="/delete/">Delete</a>`;
@@ -60,14 +62,14 @@ function loadContent(content_div, get_url) {
               <span class="text-muted">${retweetUserSpan} &middot; ${retweetTimeSpan}</span><br>
               <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
               ${tweetContentP}
-              ${tweetViewLink} &middot; ${tweetRetweetLink} &middot; ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
+              ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetRetweetsCountSpan} &middot; ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
             </div>`;
        } else {
            mediaBody = `
            <div class="media-body" data-tweet="${tweetId}">
              <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
              ${tweetContentP}
-             ${tweetViewLink} &middot; ${tweetRetweetLink} &middot ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
+             ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetRetweetsCountSpan}  &middot ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
            </div>`;
        }
 
@@ -177,12 +179,18 @@ function loadContent(content_div, get_url) {
                 const contentUser = data.user;
                 const content = data.content;
                 const time = data.created_on;
+                const tweetLikesCount = data.likes.length;
+                const retweetsCount = data.retweets;
 
-                $(".modal-detail .modal-title").html(`<span class="text-dark">${contentUser.get_full_name}</span><br>
+                const modalDetail = $(".modal-detail");
+
+                modalDetail.find(".modal-title").html(`<span class="text-dark">${contentUser.get_full_name}</span><br>
 <small class="text-muted font-weight-light">@${contentUser.username}</small><br><span class="font-weight-bold">
 ${content}</span><br><small class="text-muted">${time}</small>`);
 
-                $(".modal-detail").modal();
+                modalDetail.find(".modal-body").html(`<span class="text-dark font-weight-bold">${retweetsCount}</span> <span class="text-muted">Retweets</span> | <span class="text-dark font-weight-bold">${tweetLikesCount}</span> <span class="text-muted">Likes</span>`);
+
+                modalDetail.modal();
             },
             error: function(err) {
                 console.log("Err in single tweet");
