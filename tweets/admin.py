@@ -17,9 +17,14 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(models.Tweet)
 class TweetAdmin(admin.ModelAdmin):
-    list_display = "id", "content", "user", "created_on", "updated_on",
+
+    def likes_count(self, inst):
+        return inst.likes.count()
+
+    list_display = "id", "content", "user", "created_on", "updated_on", "likes_count",
     list_display_links = "content",
     search_fields = "user",
+    readonly_fields = "likes",
 
 
 @admin.register(models.Retweet)

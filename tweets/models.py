@@ -16,6 +16,7 @@ class Post(models.Model):
 class Tweet(Post):
     content = models.CharField(max_length=140)
     updated_on = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
         return self.content
