@@ -28,12 +28,24 @@ function loadContent(content_div, get_url) {
        const tweet = tweetData.content;
        const tweetUser = tweetData.user;
        const tweetTime = tweetData.date_display;
+       const tweetLikes = tweetData.likes;
+       const tweetLikesCount = tweetLikes.length;
+
+       let likeText = "Like";
+       tweetLikes.forEach(function(val) {
+           console.log(val);
+           if (val == loggedUserID) {
+               likeText = "Unlike";
+           }
+       });
 
        const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
        const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
        const tweetContentP = `<p class="tweet-content">${tweet}</p>`;
        const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
        const tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
+       const tweetLikeLink =  `<a class="tweet-like-link" href="/like/">${likeText}</a>`;
+       const tweetLikesCountSpan = `<small class="text-muted"><b>${tweetLikesCount}</b></small>`;
        const tweetDeleteLink = `<a class="tweet-delete-link float-right text-danger" href="/delete/">Delete</a>`;
        let mediaBody = null;
 
@@ -48,14 +60,14 @@ function loadContent(content_div, get_url) {
               <span class="text-muted">${retweetUserSpan} &middot; ${retweetTimeSpan}</span><br>
               <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
               ${tweetContentP}
-              ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetDeleteLink}
+              ${tweetViewLink} &middot; ${tweetRetweetLink} &middot; ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
             </div>`;
        } else {
            mediaBody = `
            <div class="media-body" data-tweet="${tweetId}">
              <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
              ${tweetContentP}
-             ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetDeleteLink}
+             ${tweetViewLink} &middot; ${tweetRetweetLink} &middot ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
            </div>`;
        }
 
@@ -282,4 +294,34 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
             }
         })
     });
+
+
+    /* ################################## TWEET LIKE ############################## */
+    $(document.body).on("click", "a.tweet-like-link", function(e) {
+        e.preventDefault();
+        const this_ = $(this);
+        const thisParent = this_.parent();
+        const tweetID = thisParent.attr("data-tweet");
+        console.log("Like", tweetID);
+        this_.text("Liked");
+        completeURL = get_url + `like/${tweetID}/`;
+        const likeCount = Number(this_.next().text());
+
+        $.ajax(completeURL, {
+            method: "GET",
+            success: function(data) {
+                if (data.liked) {
+                    this_.text("Liked");
+                    this_.next().text(likeCount + 1);
+                } else {
+                    this_.text("Unliked");
+                    this_.next().text(likeCount - 1);
+                }
+            },
+            error: function(err) {
+                console.log("errr in liking");
+                console.log(err);
+            }
+        })
+    })
 }
