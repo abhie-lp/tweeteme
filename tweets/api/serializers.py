@@ -59,3 +59,10 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Post
         fields = "tweet", "retweet"
+
+
+class ReplySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Reply
+        fields = "id", "content", "created_on", "tweet", "user",
