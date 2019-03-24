@@ -49,3 +49,9 @@ class TweetLikeAPIView(views.APIView):
         tweet = tweet_model.objects.get(id=tweet_id)
         liked = tweet_model.objects.like_toggle(user=self.request.user, tweet_obj=tweet)
         return response.Response({"liked": liked})
+
+
+class ReplyViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ReplySerializer
+    queryset = models.Reply.objects.all()
+    pagination_class = pagination.DefaultPagination
