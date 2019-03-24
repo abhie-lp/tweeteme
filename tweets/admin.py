@@ -36,3 +36,13 @@ class RetweetAdmin(admin.ModelAdmin):
     list_display = "id", "parent_tweet_id", "user", "created_on",
     list_display_links = "id", "parent_tweet_id",
     raw_id_fields = "parent_tweet",
+
+
+@admin.register(models.Reply)
+class ReplyAdmin(admin.ModelAdmin):
+    list_display = "id", "content", "tweet_id", "user", "created_on",
+    list_display_links = "content",
+    raw_id_fields = "tweet",
+
+    def tweet_id(self, inst):
+        return inst.tweet.id
