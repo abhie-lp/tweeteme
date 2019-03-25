@@ -62,7 +62,18 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class ReplySerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    date_display = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Reply
-        fields = "id", "content", "created_on", "tweet", "user",
+        fields = "id", "content", "date_display", "tweet", "user",
+
+    def get_date_display(self, obj):
+        obj_date = obj.created_on
+        days = (timezone.datetime.now() - obj_date).days
+
+        if days > 0:
+            return obj_date.strftime("%d %b")
+        else:
+            return naturaltime(obj_date)
