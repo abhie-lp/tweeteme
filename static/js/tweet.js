@@ -6,6 +6,7 @@ function loadContent(content_div, get_url) {
 
     let completeURL = get_url;
     let nextPageURL = null;
+    let replyNextpageURL = null;
 
     if (currentURL.search.length > 8) {
         console.log(currentURL.search);
@@ -106,7 +107,6 @@ function loadContent(content_div, get_url) {
         let attachLocation = $(content_div);
 
         if (attachLoc) {
-            console.log("reply is here");
             attachLocation = $(attachLoc);
         }
         let contentHTML = null;
@@ -125,6 +125,10 @@ function loadContent(content_div, get_url) {
                 attachLocation.append(contentHTML);
             }
         });
+
+        if (isReply && replyNextpageURL) {
+            attachLocation.append(`<p><a class="loadmore" href="#loadmore" data-type="reply">Load more</a></p>`);
+        }
     }
 
 
@@ -155,17 +159,32 @@ function loadContent(content_div, get_url) {
 
     /* ################################ LOAD MORE ################################## */
     // AJAX to handle loadmore click
-    $(".loadmore").click(function(event) {
+    $(document.body).on("click", ".loadmore", function(event) {
         event.preventDefault();
-       console.log("loading more");
 
-       $.ajax(nextPageURL, {
+       let loadURL = nextPageURL;
+       let isReply = null;
+       const this_ = $(this);
+
+       if (this_.attr("data-type") == "reply") {
+           isReply = true;
+           loadURL = replyNextpageURL;
+       }
+        console.log("loading more ", this_.attr("data-type"));
+
+       $.ajax(loadURL, {
            method: "GET",
            success: function(data) {
-               attachContent(data.results);
-               nextPageURL = data.next;
+               if (isReply) {
+                   this_.remove();
+                   replyNextpageURL = data.next;
+                   attachContent(data.results, ".modal-detail .modal-footer", true);
+               } else {
+                   nextPageURL = data.next;
+                   attachContent(data.results);
+               }
                if (!nextPageURL) {
-                   $(".loadmore").remove();
+                   this_.remove();
                }
            },
            error: function(err) {
@@ -213,6 +232,7 @@ function loadContent(content_div, get_url) {
                 console.log("Fetched ", data.results.length, " replies");
                 const attachLoc = ".modal-detail .modal-footer";
                 $(attachLoc).empty();
+                replyNextpageURL = data.next;
                 attachContent(data.results, attachLoc, true,);
             },
             error: function(err) {
