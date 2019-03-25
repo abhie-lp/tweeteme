@@ -33,12 +33,12 @@ function loadContent(content_div, get_url) {
        const tweetRetweetsCount = tweetData.retweets;
 
        let likeText = "Like";
-       tweetLikes.forEach(function(val) {
-           console.log(val);
+       for (const val of tweetLikes) {
            if (val == loggedUserID) {
                likeText = "Unlike";
+               break;
            }
-       });
+       }
 
        const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
        const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
@@ -79,15 +79,50 @@ function loadContent(content_div, get_url) {
    }
 
 
+   function replyFormat(data) {
+       const replyId = data.id;
+       const replyUser = data.user;
+       const replyContent = data.content;
+       const replyTime = data.date_display;
+
+       const replyUserSpan = `<a class="text-dark font-weight-bold" href="/${replyUser.username}/">${replyUser.get_full_name}</a> <span class="text-muted">@${replyUser.username}</span>`;
+       const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
+       const replyContentP = `<p class="reply-content">${replyContent}</p>`;
+       const mediaBody = `
+                  <div class="media-body" data-tweet="${replyId}">
+                    <span class="text-muted">${replyUserSpan} &middot; ${replyTimeSpan}</span>
+                    
+                    ${replyContentP}
+                  </div>`;
+
+       const mediaDiv = `<div class="media">${mediaBody}</div><hr style="margin-top: -5px; margin-bottom: 10px;">`;
+       return mediaDiv;
+
+   }
+
+
     /* ############################ ATTACH CONTENT TO THE CONTAINER ##################################### */
-    function attachContent(data, prepend=false) {
+    function attachContent(data, attachLoc=null, isReply=false, prepend=false) {
+        let attachLocation = $(content_div);
+
+        if (attachLoc) {
+            console.log("reply is here");
+            attachLocation = $(attachLoc);
+        }
+        let contentHTML = null;
+
         data.forEach(function(d) {
 
-            let contentHTML = tweetFormat(d) + `<hr>`;
-            if (prepend) {
-                $(content_div).prepend(contentHTML);
+            if (!isReply){
+                contentHTML = tweetFormat(d) + `<hr>`;
             } else {
-                $(content_div).append(contentHTML);
+                contentHTML = replyFormat(d);
+            }
+
+            if (prepend) {
+                attachLocation.prepend(contentHTML);
+            } else {
+                attachLocation.append(contentHTML);
             }
         });
     }
@@ -153,7 +188,7 @@ function loadContent(content_div, get_url) {
             method: "POST",
             success: function(data) {
                 console.log("Tweeted");
-                attachContent([{"tweet": data}], true);
+                attachContent([{"tweet": data}], null, false, true);
                 this_.find("textarea").val("");
                 this_.children(".tweet-characterCount").text(140);
             },
@@ -165,16 +200,43 @@ function loadContent(content_div, get_url) {
     });
 
 
+    /* ################################### ALL REPLIES FOR THE TWEET ################################ */
+    function getReplies(tweetID) {
+        console.log("Getting replies for ", tweetID);
+        completeURL = get_url + "model/reply/";
+
+        $.ajax({
+            url: completeURL,
+            method: "GET",
+            data: {"tweet_id": tweetID},
+            success: function(data) {
+                console.log("Fetched ", data.results.length, " replies");
+                const attachLoc = ".modal-detail .modal-footer";
+                $(attachLoc).empty();
+                attachContent(data.results, attachLoc, true,);
+            },
+            error: function(err) {
+                console.log("Err in fetching replies");
+                console.log(err);
+            }
+        });
+    }
+
+
     /* ################################### TWEET DETAIL VIEW LINK ###################################### */
     $(document.body).on("click", "a.tweet-detail-link", function(event) {
         event.preventDefault();
         const this_ = $(this);
-        completeURL = get_url + "model/tweet/" + this_.parent().attr("data-tweet") + "/";
+        const tweetID = this_.parent().attr("data-tweet");
+        completeURL = get_url + "model/tweet/" + tweetID + "/";
+
 
         $.ajax({
             url: completeURL,
             method: "GET",
             success: function(data) {
+                getReplies(tweetID);
+
                 console.log("Fetched single tweet");
                 const contentUser = data.user;
                 const content = data.content;
@@ -188,7 +250,8 @@ function loadContent(content_div, get_url) {
 <small class="text-muted font-weight-light">@${contentUser.username}</small><br><span class="font-weight-bold">
 ${content}</span><br><small class="text-muted">${time}</small>`);
 
-                modalDetail.find(".modal-body").html(`<span class="text-dark font-weight-bold">${retweetsCount}</span> <span class="text-muted">Retweets</span> | <span class="text-dark font-weight-bold">${tweetLikesCount}</span> <span class="text-muted">Likes</span>`);
+                modalDetail.find("#tweet-retweets").text(retweetsCount);
+                modalDetail.find("#tweet-likes").text(tweetLikesCount);
 
                 modalDetail.modal();
             },
@@ -292,7 +355,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
             // headers: {"X-CSRFToken": csrf},
             success: function(data) {
                 console.log("Retweeted successfuly");
-                attachContent([{"retweet": data}], true);
+                attachContent([{"retweet": data}], null, false, true);
                 $(".modal-retweet").modal("hide");
             },
             error: function(err) {

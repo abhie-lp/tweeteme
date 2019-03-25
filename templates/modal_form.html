@@ -8,15 +8,21 @@
         </button>
       </div>
       <div class="modal-body">
-      </div>
-      <div class="modal-footer">
+        <div id="popularity" class="mb-4">
+        <span class="font-weight-bolder" id="tweet-retweets">0</span> <span class="text-muted">Retweets</span>
+                &middot; <span class="font-weight-bolder" id="tweet-likes">0</span> <span
+            class="text-muted">Likes</span>
+          <hr>
+        </div>
         <form method="post">
           {% csrf_token %}
-          <textarea name="content" cols="40" rows="5" placeholder="Your reply" class="form-control mr-7"
+          <textarea name="content" cols="40" rows="3" placeholder="Your reply" class="form-control mr-7"
               maxlength="140" required="" id="id_content" style="min-width: 460px;"></textarea><br>
           <button type="submit" class="action btn btn-primary float-right">Save</button>
           <button type="button" class="cancel btn btn-secondary float-right mr-1" data-dismiss="modal">Close</button>
         </form>
+      </div>
+      <div class="modal-footer" style="display: block">
       </div>
     </div>
   </div>
