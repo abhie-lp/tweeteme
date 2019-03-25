@@ -55,3 +55,10 @@ class ReplyViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ReplySerializer
     queryset = models.Reply.objects.all()
     pagination_class = pagination.DefaultPagination
+
+    def get_queryset(self):
+        tweet_id = self.request.GET.get("tweet_id", None)
+        if tweet_id:
+            replies = models.Reply.objects.filter(tweet__id=tweet_id)
+            return replies
+        return super(ReplyViewSet, self).get_queryset()
