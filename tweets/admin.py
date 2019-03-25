@@ -21,7 +21,10 @@ class TweetAdmin(admin.ModelAdmin):
     def likes_count(self, inst):
         return inst.likes.count()
 
-    list_display = "id", "content", "user", "created_on", "updated_on", "likes_count", "retweets",
+    def replies_count(self, inst):
+        return inst.reply_set.count()
+
+    list_display = "id", "content", "user", "created_on", "updated_on", "likes_count", "retweets", "replies_count",
     list_display_links = "content",
     search_fields = "user",
     readonly_fields = "likes", "retweets",
