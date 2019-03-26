@@ -49,7 +49,7 @@ function loadContent(content_div, get_url) {
        const tweetRetweetsCountSpan = `<small class="text-muted"><b>${tweetRetweetsCount}</b></small>`;
        const tweetLikeLink =  `<a class="tweet-like-link" href="/like/">${likeText}</a>`;
        const tweetLikesCountSpan = `<small class="text-muted"><b>${tweetLikesCount}</b></small>`;
-       const tweetDeleteLink = `<a class="tweet-delete-link float-right text-danger" href="/delete/">Delete</a>`;
+       const tweetDeleteLink = `<a class="content-delete-link float-right text-danger" href="/delete/">Delete</a>`;
        let mediaBody = null;
 
        if (data.retweet != null) {
@@ -59,7 +59,7 @@ function loadContent(content_div, get_url) {
            const retweetUserSpan = `<small class="text-muted"><a class="text-muted text-uppercase" href="/${retweetUser.username}/">${retweetUser.get_full_name}</a> Retweeted</small>`;
            const retweetTimeSpan = `<small class="text-muted">${retweetTime}</small>`;
            mediaBody = `
-            <div class="media-body" data-tweet="${tweetId}" data-retweet="${retweetID}">
+            <div class="media-body" data-type="retweet" data-id="${tweetId}" data-reId="${retweetID}">
               <span class="text-muted">${retweetUserSpan} &middot; ${retweetTimeSpan}</span><br>
               <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
               ${tweetContentP}
@@ -67,7 +67,7 @@ function loadContent(content_div, get_url) {
             </div>`;
        } else {
            mediaBody = `
-           <div class="media-body" data-tweet="${tweetId}">
+           <div class="media-body" data-type="tweet" data-id="${tweetId}">
              <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
              ${tweetContentP}
              ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetRetweetsCountSpan}  &middot ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
@@ -80,6 +80,7 @@ function loadContent(content_div, get_url) {
    }
 
 
+    /* ############################ FORMAT OF THE REPLY ##################################### */
    function replyFormat(data) {
        const replyId = data.id;
        const replyUser = data.user;
@@ -90,7 +91,7 @@ function loadContent(content_div, get_url) {
        const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
        const replyContentP = `<p class="reply-content">${replyContent}</p>`;
        const mediaBody = `
-                  <div class="media-body" data-tweet="${replyId}">
+                  <div class="media-body" data-type="reply" data-id="${replyId}">
                     <span class="text-muted">${replyUserSpan} &middot; ${replyTimeSpan}</span>
                     
                     ${replyContentP}
@@ -247,7 +248,7 @@ function loadContent(content_div, get_url) {
     $(document.body).on("click", "a.tweet-detail-link", function(event) {
         event.preventDefault();
         const this_ = $(this);
-        const tweetID = this_.parent().attr("data-tweet");
+        const tweetID = this_.parent().attr("data-id");
         completeURL = get_url + "model/tweet/" + tweetID + "/";
 
 
@@ -288,33 +289,36 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
 
     /* ############################### CONTENT DELETE CLICK ############################### */
     // Handle the tweet delete click
-    $(document.body).on("click", "a.tweet-delete-link", function(event) {
+    $(document.body).on("click", "a.content-delete-link", function(event) {
         event.preventDefault();
+
         const this_ = $(this);
         const thisParent = this_.parent();
-        const thisContent = thisParent.find(".tweet-content").text();
+
+        let thisType = thisParent.attr("data-type");
+        let thisID = thisParent.attr("data-id");
+        contentID = thisID;
+        contentType = thisType;
+
+        if (thisType == "retweet") {
+            thisID = thisParent.attr("data-reID");
+            contentID = thisID;
+            thisType = "tweet";
+        }
+
+        const thisContent = thisParent.find(`.${thisType}-content`).text();
+
         const deleteModal = $(".modal-delete");
         const deleteForm = deleteModal.find("form");
 
-        contentID = this_.parent().attr("data-tweet");
-        let isRetweet = false;
 
-        if (thisParent.attr("data-retweet")) {
-            contentID = thisParent.attr("data-retweet");
-            isRetweet = true
-        }
-        console.log("Delete the tweet ", contentID, "????");
+        console.log("Delete the ", contentType, contentID, "????");
 
         deleteModal.find("h5.modal-title").html(`<span class="text-danger font-weight-bold">Delete:</span> <span class="font-weight-bold">${thisContent}</span>`);
         deleteModal.find("button[type=submit]").removeClass("btn-primary").addClass("btn-danger").text("Delete");
 
         deleteForm.removeClass("retweet");
         deleteForm.addClass("delete");
-        if (isRetweet) {
-            deleteForm.attr("action", "retweet");
-        } else {
-            deleteForm.attr("action", "tweet")
-        }
 
         deleteModal.modal();
         contentArea = [thisParent.parent(), thisParent.parent().next()];
@@ -325,8 +329,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     $(document.body).on("submit", ".modal-delete form.delete", function(e) {
         e.preventDefault();
         const csrf = $(this).children("input").attr("value");
-        const actionVal = $(this).attr("action");
-        completeURL = get_url + `model/${actionVal}/${contentID}/`;
+        completeURL = get_url + `model/${contentType}/${contentID}/`;
 
         $.ajax(completeURL, {
             method: "DELETE",
@@ -355,7 +358,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
         const thisContent = this_.prev().prev().text();
         const retweetModal = $(".modal-retweet");
 
-        contentID = thisParent.attr("data-tweet");
+        contentID = thisParent.attr("data-id");
         console.log("Retweet " + contentID + "???");
 
         retweetModal.find("h5.modal-title").html(`<span class="text-primary font-weight-bold">Retweet: </span> <span class="font-weight-bold">${thisContent}</span>`);
@@ -367,6 +370,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     });
 
 
+    /* ############################ CONFIRMATION OF RETWEET ##################################### */
     $(document.body).on("submit", ".modal-retweet form.retweet", function(e) {
         e.preventDefault();
         const parent_tweet = contentID;
@@ -395,7 +399,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
         e.preventDefault();
         const this_ = $(this);
         const thisParent = this_.parent();
-        const tweetID = thisParent.attr("data-tweet");
+        const tweetID = thisParent.attr("data-id");
         console.log("Like", tweetID);
         this_.text("Liked");
         completeURL = get_url + `like/${tweetID}/`;

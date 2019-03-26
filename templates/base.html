@@ -49,8 +49,11 @@
       const currentURL = window.location;
       const loggedUser = "{{ request.user }}";
       const loggedUserID = Number("{{ request.user.id }}");
+
       let contentID;
+      let contentType;
       let contentArea;
+
       let csrftoken = null;
     </script>
     <script src="{% static 'js/google-jq.js' %}"></script>
