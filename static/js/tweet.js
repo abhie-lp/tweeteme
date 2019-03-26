@@ -255,6 +255,7 @@ function loadContent(content_div, get_url) {
             url: completeURL,
             method: "GET",
             success: function(data) {
+                contentID = tweetID;
                 getReplies(tweetID);
 
                 console.log("Fetched single tweet");
@@ -411,6 +412,29 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
             },
             error: function(err) {
                 console.log("errr in liking");
+                console.log(err);
+            }
+        })
+    });
+
+
+    /* ################################## REPLY TO A TWEET ############################## */
+    $(".modal-detail form").submit(function(e) {
+        e.preventDefault();
+        console.log("Replying to ", contentID, " tweet");
+        completeURL = get_url + "model/reply/";
+        const this_ = $(this);
+        $.ajax({
+            url: completeURL,
+            method: "POST",
+            data: this_.serialize() + `&tweet_id=${contentID}`,
+            success: function(data) {
+                console.log("replied successfully");
+                attachContent([data], ".modal-detail .modal-footer", true, true);
+                this_.children("textarea").val("");
+            },
+            error: function(err) {
+                console.log("errrrr in reply");
                 console.log(err);
             }
         })
