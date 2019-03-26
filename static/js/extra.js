@@ -47,3 +47,16 @@ function getCookie(name) {
 }
 
 csrftoken = getCookie('csrftoken');
+
+
+function userHasLiked(likeArray) {
+    let likeText = "Like";
+    for (const val of likeArray) {
+       if (val == loggedUserID) {
+           likeText = "Unlike";
+           break;
+       }
+   }
+
+    return likeText
+}
