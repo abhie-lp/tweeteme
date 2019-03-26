@@ -67,3 +67,14 @@ class ReplyViewSet(viewsets.ModelViewSet):
         tweet_id = self.request.POST.get("tweet_id")
         tweet = models.Tweet.objects.get(id=tweet_id)
         return serializer.save(user=self.request.user, tweet=tweet)
+
+
+class ReplyLikeAPIView(views.APIView):
+
+    def get(self, *args, **kwargs):
+        reply_id = self.kwargs.get("reply_id")
+        print("reply_id == ", reply_id)
+        reply_model = models.Reply
+        reply = reply_model.objects.get(id=reply_id)
+        liked = reply_model.objects.like_toggle(user=self.request.user, reply_obj=reply)
+        return response.Response({"liked": liked})
