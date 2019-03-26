@@ -74,12 +74,29 @@ class Retweet(Post):
         return self.parent_tweet.content
 
 
+class ReplyManager(models.Manager):
+
+    def like_toggle(self, user, reply_obj):
+        liked_by = reply_obj.likes
+        user_liked = False
+
+        if user in liked_by.all():
+            liked_by.remove(user)
+        else:
+            liked_by.add(user)
+            user_liked = True
+
+        return user_liked
+
+
 class Reply(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE)
     content = models.CharField(max_length=140)
     created_on = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True, related_name="likes")
+
+    objects = ReplyManager()
 
     class Meta:
         ordering = "-id",
