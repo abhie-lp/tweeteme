@@ -67,7 +67,7 @@ class ReplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Reply
-        fields = "id", "content", "date_display", "tweet", "user",
+        fields = "id", "content", "date_display", "tweet", "user", "likes",
         read_only_fields = "tweet",
 
     def get_date_display(self, obj):
