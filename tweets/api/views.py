@@ -62,3 +62,8 @@ class ReplyViewSet(viewsets.ModelViewSet):
             replies = models.Reply.objects.filter(tweet__id=tweet_id)
             return replies
         return super(ReplyViewSet, self).get_queryset()
+
+    def perform_create(self, serializer):
+        tweet_id = self.request.POST.get("tweet_id")
+        tweet = models.Tweet.objects.get(id=tweet_id)
+        return serializer.save(user=self.request.user, tweet=tweet)
