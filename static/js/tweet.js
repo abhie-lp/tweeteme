@@ -86,6 +86,7 @@ function loadContent(content_div, get_url) {
        const replyUser = data.user;
        const replyContent = data.content;
        const replyTime = data.date_display;
+       const replyDeleteLink = `<a class="content-delete-link float-right text-danger" href="/delete/">Delete</a>`;
 
        const replyUserSpan = `<a class="text-dark font-weight-bold" href="/${replyUser.username}/">${replyUser.get_full_name}</a> <span class="text-muted">@${replyUser.username}</span>`;
        const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
@@ -95,6 +96,7 @@ function loadContent(content_div, get_url) {
                     <span class="text-muted">${replyUserSpan} &middot; ${replyTimeSpan}</span>
                     
                     ${replyContentP}
+                    ${replyDeleteLink}
                   </div>`;
 
        const mediaDiv = `<div class="media">${mediaBody}</div><hr style="margin-top: -5px; margin-bottom: 10px;">`;
