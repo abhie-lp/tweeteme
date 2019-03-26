@@ -43,9 +43,12 @@ class RetweetAdmin(admin.ModelAdmin):
 
 @admin.register(models.Reply)
 class ReplyAdmin(admin.ModelAdmin):
-    list_display = "id", "content", "tweet_id", "user", "created_on",
+    list_display = "id", "content", "tweet_id", "user", "created_on", "likes_count",
     list_display_links = "content",
     raw_id_fields = "tweet",
 
     def tweet_id(self, inst):
         return inst.tweet.id
+
+    def likes_count(self, inst):
+        return inst.likes.count()

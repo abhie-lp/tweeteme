@@ -79,6 +79,7 @@ class Reply(models.Model):
     tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE)
     content = models.CharField(max_length=140)
     created_on = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, blank=True, related_name="likes")
 
     class Meta:
         ordering = "-id",

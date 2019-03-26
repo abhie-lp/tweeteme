@@ -86,7 +86,7 @@ function loadContent(content_div, get_url) {
        const replyUser = data.user;
        const replyContent = data.content;
        const replyTime = data.date_display;
-       const replyDeleteLink = `<a class="content-delete-link float-right text-danger" href="/delete/">Delete</a>`;
+       const replyDeleteLink = `<a class="content-delete-link float-right text-danger mb-2 mt-n4" href="/delete/">Delete</a>`;
 
        const replyUserSpan = `<a class="text-dark font-weight-bold" href="/${replyUser.username}/">${replyUser.get_full_name}</a> <span class="text-muted">@${replyUser.username}</span>`;
        const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
