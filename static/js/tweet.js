@@ -273,6 +273,8 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
 
                 modalDetail.find("#tweet-retweets").text(retweetsCount);
                 modalDetail.find("#tweet-likes").text(tweetLikesCount);
+                modalDetail.find("textarea").val("");
+                modalDetail.find("span.tweet-characterCount").text(140)
 
                 modalDetail.modal();
             },
@@ -432,6 +434,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
                 console.log("replied successfully");
                 attachContent([data], ".modal-detail .modal-footer", true, true);
                 this_.children("textarea").val("");
+                this_.children("span.tweet-characterCount").text("140")
             },
             error: function(err) {
                 console.log("errrrr in reply");
