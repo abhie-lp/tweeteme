@@ -33,13 +33,7 @@ function loadContent(content_div, get_url) {
        const tweetLikesCount = tweetLikes.length;
        const tweetRetweetsCount = tweetData.retweets;
 
-       let likeText = "Like";
-       for (const val of tweetLikes) {
-           if (val == loggedUserID) {
-               likeText = "Unlike";
-               break;
-           }
-       }
+       let likeText = userHasLiked(tweetLikes);
 
        const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
        const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
@@ -47,7 +41,7 @@ function loadContent(content_div, get_url) {
        const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
        const tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
        const tweetRetweetsCountSpan = `<small class="text-muted"><b>${tweetRetweetsCount}</b></small>`;
-       const tweetLikeLink =  `<a class="tweet-like-link" href="/like/">${likeText}</a>`;
+       const tweetLikeLink =  `<a class="content-like-link" href="/like/">${likeText}</a>`;
        const tweetLikesCountSpan = `<small class="text-muted"><b>${tweetLikesCount}</b></small>`;
        const tweetDeleteLink = `<a class="content-delete-link float-right text-danger" href="/delete/">Delete</a>`;
        let mediaBody = null;
@@ -86,7 +80,14 @@ function loadContent(content_div, get_url) {
        const replyUser = data.user;
        const replyContent = data.content;
        const replyTime = data.date_display;
-       const replyDeleteLink = `<a class="content-delete-link float-right text-danger mb-2 mt-n4" href="/delete/">Delete</a>`;
+       const replyLikes = data.likes;
+       const replyLikesCount = replyLikes.length;
+
+       let likeText = userHasLiked(replyLikes);
+
+       const replyDeleteLink = `<a class="content-delete-link float-right text-danger mb-2 mt-n3" href="/delete/">Delete</a>`;
+       const replyLikeLink = `<a class="content-like-link float-left mb-1 mt-n3" href="/like/">${likeText}</a>`;
+       const replyLikesCountSpan = `<small class="text-muted float-left mb-1 mt-n3 ml-1"><b>${replyLikesCount}</b></small>`;
 
        const replyUserSpan = `<a class="text-dark font-weight-bold" href="/${replyUser.username}/">${replyUser.get_full_name}</a> <span class="text-muted">@${replyUser.username}</span>`;
        const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
@@ -96,7 +97,7 @@ function loadContent(content_div, get_url) {
                     <span class="text-muted">${replyUserSpan} &middot; ${replyTimeSpan}</span>
                     
                     ${replyContentP}
-                    ${replyDeleteLink}
+                    ${replyLikeLink} ${replyLikesCountSpan} ${replyDeleteLink}
                   </div>`;
 
        const mediaDiv = `<div class="media">${mediaBody}</div><hr style="margin-top: -5px; margin-bottom: 10px;">`;
@@ -396,15 +397,17 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
     });
 
 
-    /* ################################## TWEET LIKE ############################## */
-    $(document.body).on("click", "a.tweet-like-link", function(e) {
+    /* ################################## CONTENT LIKE ############################## */
+    $(document.body).on("click", "a.content-like-link", function(e) {
         e.preventDefault();
         const this_ = $(this);
         const thisParent = this_.parent();
-        const tweetID = thisParent.attr("data-id");
-        console.log("Like", tweetID);
-        this_.text("Liked");
-        completeURL = get_url + `like/${tweetID}/`;
+        const thisType = thisParent.attr("data-type");
+        const thisID = thisParent.attr("data-id");
+        console.log("thisType == ", thisType);
+        console.log("thisID == ", thisID);
+        console.log("Like", thisID);
+        completeURL = get_url + `like/${thisType}/${thisID}/`;
         const likeCount = Number(this_.next().text());
 
         $.ajax(completeURL, {
