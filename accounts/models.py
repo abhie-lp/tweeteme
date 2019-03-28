@@ -20,7 +20,7 @@ def image_dest(instance, filename, thumbnail=False):
 
 
 def thumb_dest(instance, filename):
-    image_dest(instance, filename, thumbnail=True)
+    return image_dest(instance, filename, thumbnail=True)
 
 
 class UserProfile(models.Model):
@@ -44,24 +44,25 @@ class UserProfile(models.Model):
             new = self.profile_pic
 
             # Check if the current_image is not "default.jpg" and the image field has changed
-            if self.__curr_image.name != "default.jpg" and self.__curr_image.name != self.profile_pic.name:
-                self.__curr_image.delete(False)         # Delete the current image
-                self.__curr_thumb.delete(False)         # Delete the current thumbnail
-                self.profile_pic = new                  # Assign the new image to self.profile
+            if self.__curr_image.name != self.profile_pic.name:
+                if self.__curr_image.name != "default.jpg":
+                    self.__curr_image.delete(False)  # Delete the current image
+                    self.__curr_thumb.delete(False)  # Delete the current thumbnail
+                    self.profile_pic = new  # Assign the new image to self.profile
 
-            self.profile_thumb.save("thumb.jpg", ContentFile(new.read()), False)        # Assign same to thumbnail
+                self.profile_thumb.save("thumb.jpg", ContentFile(new.read()), False)  # Assign same to thumbnail
 
-            # Save the changes to model
-            super(UserProfile, self).save(*args, **kwargs)
+                # Save the changes to model
+                super(UserProfile, self).save(*args, **kwargs)
 
-            # Resize the thumbnail image
-            thumb_path = self.profile_thumb.path
-            img = Image.open(thumb_path)
-            output_size = (250, 250)
-            if img.height > 250 or img.weight > 250:
-                img.thumbnail(output_size)
-                img.save(thumb_path)
-            return
+                # Resize the thumbnail image
+                thumb_path = self.profile_thumb.path
+                img = Image.open(thumb_path)
+                output_size = (250, 250)
+                if img.height > 250 or img.weight > 250:
+                    img.thumbnail(output_size)
+                    img.save(thumb_path)
+                return
 
         super(UserProfile, self).save(*args, **kwargs)
 
