@@ -58,8 +58,8 @@ class UserProfile(models.Model):
                 # Resize the thumbnail image
                 thumb_path = self.profile_thumb.path
                 img = Image.open(thumb_path)
-                output_size = (250, 250)
-                if img.height > 250 or img.weight > 250:
+                output_size = (300, 300)
+                if img.height > 300 or img.weight > 300:
                     img.thumbnail(output_size)
                     img.save(thumb_path)
                 return
