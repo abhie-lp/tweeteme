@@ -5,6 +5,10 @@
 function loadContent(content_div, get_url) {
 
     let completeURL = get_url;
+    if (currentURL.pathname.startsWith("/user/")) {
+        const user = currentURL.pathname.slice(6, -1);
+        completeURL = get_url + "?username=" + user;
+    }
     let nextPageURL = null;
     let replyNextpageURL = null;
 
@@ -35,7 +39,7 @@ function loadContent(content_div, get_url) {
 
        let likeText = userHasLiked(tweetLikes);
 
-       const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
+       const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/user/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
        const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
        const tweetContentP = `<p class="tweet-content">${tweet}</p>`;
        const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
@@ -50,7 +54,7 @@ function loadContent(content_div, get_url) {
            const retweetID = retweetData.id;
            const retweetUser = retweetData.user;
            const retweetTime = retweetData.date_display;
-           const retweetUserSpan = `<small class="text-muted"><a class="text-muted text-uppercase" href="/${retweetUser.username}/">${retweetUser.get_full_name}</a> Retweeted</small>`;
+           const retweetUserSpan = `<small class="text-muted"><a class="text-muted text-uppercase" href="/user/${retweetUser.username}/">${retweetUser.get_full_name}</a> Retweeted</small>`;
            const retweetTimeSpan = `<small class="text-muted">${retweetTime}</small>`;
            mediaBody = `
             <div class="media-body" data-type="retweet" data-id="${tweetId}" data-reId="${retweetID}">
@@ -138,6 +142,7 @@ function loadContent(content_div, get_url) {
 
     /* ########################### GET CONTENT FROM API ############################### */
     $.ajax({
+
         url: completeURL,
         method: "GET",
         success: function(data) {
@@ -385,7 +390,9 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
             // headers: {"X-CSRFToken": csrf},
             success: function(data) {
                 console.log("Retweeted successfuly");
-                attachContent([{"retweet": data}], null, false, true);
+                if (content_div == "#tweet-container"){
+                    attachContent([{"retweet": data}], null, false, true);
+                }
                 $(".modal-retweet").modal("hide");
             },
             error: function(err) {
@@ -402,7 +409,7 @@ ${content}</span><br><small class="text-muted">${time}</small>`);
         e.preventDefault();
         const this_ = $(this);
         const thisParent = this_.parent();
-        const thisType = thisParent.attr("data-type");
+        const thisType = thisParent.attr("data-type") != "retweet" ? thisParent.attr("data-type") : "tweet";
         const thisID = thisParent.attr("data-id");
         console.log("thisType == ", thisType);
         console.log("thisID == ", thisID);
