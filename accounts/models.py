@@ -23,11 +23,36 @@ def thumb_dest(instance, filename):
     return image_dest(instance, filename, thumbnail=True)
 
 
+class UserProfileManager(models.Manager):
+
+    def toggle_following(self, user, logged_user):
+        user_following = logged_user.userprofile.following
+        follow_status = False
+
+        if user != logged_user:
+            if user in user_following.all():
+                user_following.remove(user)
+            else:
+                user_following.add(user)
+                follow_status = True
+
+        return follow_status
+
+    def is_following(self, user, logged_user):
+        user_following = logged_user.userprofile.following.all()
+        follow_text = "Follow"
+        if user in user_following:
+            follow_text = "Unfollow"
+        return follow_text
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(upload_to=image_dest, default="default.jpg")
     profile_thumb = models.ImageField(upload_to=thumb_dest, default="default.jpg", blank=True)
     following = models.ManyToManyField(User, blank=True, related_name="following_me")
+
+    objects = UserProfileManager()
 
     def __init__(self, *args, **kwargs):
         super(UserProfile, self).__init__(*args, **kwargs)
