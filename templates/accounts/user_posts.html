@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}TweetMe - {{ user.username }}{% endblock title %}
+
+{% block user %}
+  {% include "user_detail.html" with for_user=user %}
+{% endblock user %}
+
+{% block container %}
+  <div id="user-tweet-container"></div>
+  <p ><a class="loadmore" href="" data-type="tweet">Load more</a></p>
+{% endblock container %}
+
+{% block extra_script %}
+  <script>
+  loadContent("#user-tweet-container", "/api/")
+  </script>
+{% endblock extra_script %}
