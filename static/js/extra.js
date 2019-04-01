@@ -60,3 +60,31 @@ function userHasLiked(likeArray) {
 
     return likeText
 }
+
+
+/* ###################################### HANDLE THE FOLLOW CLICK ###################################### */
+function followUser(inst) {
+    console.log("Follow request");
+    const this_ = $(inst);
+    const user = this_.prev().text().slice(1,);
+    const followersCount = $("#followers-count");
+    
+    $.ajax({
+        url: currentURL.pathname + "follow/",
+        method: "GET",
+        success: function(data) {
+            if (data.follow_status) {
+                this_.text("Followed");
+                followersCount.text(Number(followersCount.text()) + 1);
+            } else {
+                this_.text("Unfollowed");
+                followersCount.text(Number(followersCount.text()) - 1);
+            }
+            console.log("Successfully followed", user);
+        },
+        error: function(err) {
+            console.log("errrr in following");
+            console.log(err)
+        }
+    })
+}
