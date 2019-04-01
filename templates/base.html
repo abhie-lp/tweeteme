@@ -40,7 +40,7 @@
     </div>
     <script>
       const currentURL = window.location;
-      const loggedUser = "{{ request.user }}";
+      const loggedUser = "{{ request.user.username }}";
       const loggedUserID = Number("{{ request.user.id }}");
 
       let contentID;

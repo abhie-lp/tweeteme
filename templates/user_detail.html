@@ -6,6 +6,9 @@
   <div class="card-body">
     <h5 class="card-title">{{for_user.get_full_name}}</h5>
     <p class="card-text">@{{ for_user.username }}</p>
+    {% if request.user != for_user %}
+      <button id="follow-user-button" class="btn btn-outline-primary" onclick="followUser(this)">{{follow_text}}</button>
+    {% endif %}
     <table class="table table-borderless text-center" style="margin-bottom: -20px;">
       <thead class="text-muted">
         <tr class="mb-n5">
@@ -16,9 +19,9 @@
       </thead>
       <tbody class="text-primary font-weight-bolder pt-n4">
         <tr>
-          <td>{{ for_user.post_set.count }}</td>
-          <td>{{ for_user.userprofile.following.count }}</td>
-          <td>{{ for_user.following_me.count }}</td>
+          <td id="posts-count">{{ for_user.post_set.count }}</td>
+          <td id="following-count">{{ for_user.userprofile.following.count }}</td>
+          <td id="followers-count">{{ for_user.following_me.count }}</td>
         </tr>
       </tbody>
     </table>
