@@ -40,6 +40,13 @@ class PostListAPIView(generics.ListAPIView):
                      "user__first_name",
                      "user__last_name",)
 
+    def get_queryset(self, *args, **kwargs):
+        username = self.request.GET.get("username", "")
+        if username:
+            qs = models.Post.objects.filter(user__username=username)
+            return qs
+        return super(PostListAPIView, self).get_queryset(*args, **kwargs)
+
 
 class TweetLikeAPIView(views.APIView):
 
