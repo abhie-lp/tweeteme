@@ -26,14 +26,7 @@
     {% block display %}
         <div class="col-md-4 mt-md-3 mt-5" style="background-color: blue">
           {% block user %}
-            <div class="card text-center">
-              <!-- <img src="..." class="card-img-top" alt="..."> -->
-              <div class="card-body">
-                <h5 class="card-title">{{request.user.get_full_name}}</h5>
-                <p class="card-text">@{{ request.user.username }}</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
+            {% include "user_detail.html" with for_user=request.user %}
           {% endblock user %}
         </div>
         <div class="col-md-7 bg-light ml-md-3 mt-md-3 mt-3">
