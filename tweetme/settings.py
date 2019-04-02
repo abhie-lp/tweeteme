@@ -13,7 +13,7 @@ SECRET_KEY = 'ti$=ddsu*!8$(mk_&7i9$up#kv-^zd7i7f87c4=gncwdeub!zx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["djangolover01.pythonanywhere.com", "127.0.0.1", "localhost"]
 
 
 # Application definition
