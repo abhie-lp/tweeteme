@@ -15,10 +15,14 @@
           <hr>
         </div>
         <form method="post">
+          <div class="form-row">
+            <div class="form-group col-12">
+              <div class="input-group">
+                <textarea name="content" cols="40" rows="3" placeholder="Your reply" class="form-control" maxlength="140" required="" id="id_content" oninput="charsLeft(this)"></textarea><br>
+              </div>
+            </div>
+            </div>
           {% csrf_token %}
-          <textarea name="content" cols="40" rows="3" placeholder="Your reply" class="form-control mr-7"
-              maxlength="140" required="" id="id_content" style="min-width: 460px;" oninput="charsLeft(this)
-"></textarea><br>
           <button type="submit" class="action btn btn-primary float-right">Reply</button>
           <button type="button" class="cancel btn btn-secondary float-right mr-1" data-dismiss="modal">Close</button>
           <span class="tweet-characterCount float-right mr-2 mt-2">140</span>
