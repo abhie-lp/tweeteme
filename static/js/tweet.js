@@ -453,7 +453,7 @@ function loadContent(content_div, get_url) {
       success: function(data) {
         console.log("replied successfully");
         attachContent([data], ".modal-detail .modal-footer", true, true);
-        this_.children("textarea").val("");
+        this_.find("textarea").val("");
         this_.children("span.tweet-characterCount").text("140")
       },
       error: function(err) {
