@@ -1,5 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-primary fixed-top">
-  <a class="navbar-brand" href="#">TweetMe</a>
+<nav class="navbar navbar-expand-lg navbar-light navbar-dark bg-primary fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">TweetMe</a>
   {% if request.user.is_authenticated %}
     <form id="searchForm" class="form-inline my-2 my-lg-0 ml-auto" action="{% url 'tweet_api:tweet-list' %}?search=">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search"
@@ -35,5 +36,6 @@
         </li>
       </ul>
     {% endif %}
+  </div>
   </div>
 </nav>

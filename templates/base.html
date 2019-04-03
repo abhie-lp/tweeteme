@@ -20,22 +20,47 @@
   </head>
 
   <body style="background-color: lightblue; margin: 5px;">
-  {% include "navbar.html" %}
+    {% include "navbar.html" %}
+
     <div class="container mt-md-5 mt-5">
       <div class="row">
-    {% block display %}
-        <div class="col-md-4 mt-md-3 mt-5" style="background-color: blue">
-          {% block user %}
-            {% include "user_detail.html" with for_user=request.user %}
-          {% endblock user %}
+      {% block display %}
+
+      <div class="col-md-4 mt-md-3 mt-5" style="background-color: transparent">
+        {% block user %}
+          {% include "user_detail.html" with for_user=request.user %}
+        {% endblock user %}
+
+        {% if recommended_users %}
+          <div id="recommended_users" class="mx-n3" style="background-color: white; margin-top: 10px;">
+            <h3 class="text-center font-weight-bold text-muted">Recommended Users</h3>
+            {% for user in recommended_users %}
+              <div class="media">
+                <img class="mr-3 img-thumbnail" width="65px" src="/media/{{ user.userprofile__profile_thumb }}" alt="Generic placeholder
+                image">
+                <div class="media-body">
+                  <h6 class="mt-0"><a href="{% url 'user:user_posts' user.username %}">
+                    {{user.first_name}} {{ user.last_name }}</a> @{{ user.username }}</h6>
+                  <button data-user="{{ profile.user.username }}" class="follow-user btn btn-sm
+                  btn-outline-success" onclick="followUser(this, true)">Follow</button>
+                </div>
+              </div><br>
+            {% empty %}
+              <p>Looks like you have followed everyone.!!</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
         </div>
+
         <div class="col-md-7 bg-light ml-md-3 mt-md-3 mt-3">
           {% block container %}
           {% endblock container %}
         </div>
-    {% include 'modal_form.html' %}
-    {% include "modal.html" %}
-    {% endblock display %}
+
+      {% include 'modal_form.html' %}
+      {% include "modal.html" %}
+      {% endblock display %}
       </div>
     </div>
     <script>
