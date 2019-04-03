@@ -63,14 +63,21 @@ function userHasLiked(likeArray) {
 
 
 /* ###################################### HANDLE THE FOLLOW CLICK ###################################### */
-function followUser(inst) {
+function followUser(inst, from_suggestion=false) {
     console.log("Follow request");
     const this_ = $(inst);
     const user = this_.prev().text().slice(1,);
     const followersCount = $("#followers-count");
+    let completeURL = currentURL.pathname + "follow/";
+    
+    if (from_suggestion) {
+        const thisHref = this_.parent().find("a").attr("href");
+        completeURL = thisHref + "follow/";
+        console.log(completeURL);
+    }
     
     $.ajax({
-        url: currentURL.pathname + "follow/",
+        url: completeURL,
         method: "GET",
         success: function(data) {
             if (data.follow_status) {
