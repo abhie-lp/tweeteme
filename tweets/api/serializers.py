@@ -7,10 +7,11 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_thumb = serializers.CharField(source="userprofile.profile_thumb.url", read_only=True)
 
     class Meta:
         model = User
-        fields = "id", "username", "get_full_name",
+        fields = "id", "username", "get_full_name", "profile_thumb",
 
 
 class TweetSerializer(serializers.ModelSerializer):
