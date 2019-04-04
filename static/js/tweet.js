@@ -43,12 +43,20 @@ function loadContent(content_div, get_url) {
     const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
     const tweetContentP = `<p class="tweet-content">${tweet}</p>`;
     const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
-    const tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
+    let tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
     const tweetRetweetsCountSpan = `<small class="text-muted"><b>${tweetRetweetsCount}</b></small>`;
-    const tweetLikeLink =  `<a class="content-like-link" href="/like/">${likeText}</a>`;
+    let tweetLikeLink =  `<a class="content-like-link" href="/like/">${likeText}</a>`;
     const tweetLikesCountSpan = `<small class="text-muted"><b>${tweetLikesCount}</b></small>`;
-    const tweetDeleteLink = `<a class="content-delete-link float-right text-danger" href="/delete/">Delete</a>`;
+    let tweetDeleteLink = `<a class="content-delete-link float-right text-danger" href="/delete/">Delete</a>`;
     let mediaBody = null;
+    
+    if (!loggedUser) {
+      const login_url = "/user/login/";
+      tweetRetweetLink = tweetRetweetLink.replace("tweet-retweet-link", "login-to-retweet");
+      tweetRetweetLink = tweetRetweetLink.replace("/retweet/", login_url);
+      tweetLikeLink = tweetLikeLink.replace("content-like-link", "login-to-like");
+      tweetLikeLink = tweetLikeLink.replace("/like/", login_url);
+    }
     
     if (data.retweet != null) {
       const retweetID = retweetData.id;
@@ -56,6 +64,11 @@ function loadContent(content_div, get_url) {
       const retweetTime = retweetData.date_display;
       const retweetUserSpan = `<small class="text-muted"><a class="text-muted text-uppercase" href="/user/${retweetUser.username}/">${retweetUser.get_full_name}</a> Retweeted</small>`;
       const retweetTimeSpan = `<small class="text-muted">${retweetTime}</small>`;
+      
+      if (retweetUser.username != loggedUser && tweetUser.username != loggedUser) {
+        tweetDeleteLink = "";
+      }
+      
       mediaBody = `
             <div class="media-body" data-type="retweet" data-id="${tweetId}" data-reId="${retweetID}">
               <span class="text-muted">${retweetUserSpan} &middot; ${retweetTimeSpan}</span><br>
@@ -64,6 +77,11 @@ function loadContent(content_div, get_url) {
               ${tweetViewLink} &middot; ${tweetRetweetLink} ${tweetRetweetsCountSpan} &middot; ${tweetLikeLink} ${tweetLikesCountSpan} ${tweetDeleteLink}
             </div>`;
     } else {
+      
+      if (tweetUser.username != loggedUser) {
+        tweetDeleteLink = "";
+      }
+      
       mediaBody = `
            <div class="media-body" data-type="tweet" data-id="${tweetId}">
              <span class="text-muted">${tweetUserSpan} &middot ${tweetTimeSpan}</span>
@@ -89,13 +107,24 @@ function loadContent(content_div, get_url) {
     
     let likeText = userHasLiked(replyLikes);
     
-    const replyDeleteLink = `<a class="content-delete-link float-right text-danger mb-2 mt-n3" href="/delete/">Delete</a>`;
-    const replyLikeLink = `<a class="content-like-link float-left mb-1 mt-n3" href="/like/">${likeText}</a>`;
+    let replyDeleteLink = `<a class="content-delete-link float-right text-danger mb-2 mt-n3" href="/delete/">Delete</a>`;
+    let replyLikeLink = `<a class="content-like-link float-left mb-1 mt-n3" href="/like/">${likeText}</a>`;
     const replyLikesCountSpan = `<small class="text-muted float-left mb-1 mt-n3 ml-1"><b>${replyLikesCount}</b></small>`;
     
     const replyUserSpan = `<a class="text-dark font-weight-bold" href="/user/${replyUser.username}/">${replyUser.get_full_name}</a> <span class="text-muted">@${replyUser.username}</span>`;
     const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
     const replyContentP = `<p class="reply-content">${replyContent}</p>`;
+    
+    if (loggedUser != replyUser.username) {
+      replyDeleteLink = "";
+    }
+    
+    if (!loggedUser) {
+      replyLikeLink = replyLikeLink.replace("content-like-link", "login-to-like");
+      replyLikeLink = replyLikeLink.replace("/like/", "/user/login/");
+      
+    }
+    
     const mediaBody = `
                   <div class="media-body" data-type="reply" data-id="${replyId}">
                     <span class="text-muted">${replyUserSpan} &middot; ${replyTimeSpan}</span>
