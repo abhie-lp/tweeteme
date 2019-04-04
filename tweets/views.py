@@ -1,16 +1,17 @@
 from . import forms
 
-from django.contrib.auth.models import User
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
+@login_required
 def tweet_list(request):
     tweet_form = forms.TweetForm()
     logged_user = request.user
     logged_profile = logged_user.userprofile
     following = list(logged_profile.following.values_list("id", flat=True))
     following.append(logged_user.id)
-    print(following)
     recommended_users = User.objects.exclude(
                                             id__in=following
                                             ).values("id",
