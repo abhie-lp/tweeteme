@@ -40,6 +40,7 @@ function loadContent(content_div, get_url) {
     let likeText = userHasLiked(tweetLikes);
     
     const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/user/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
+    const tweetUserImg = `<img class="mr-3 rounded-circle" width=80px src="${tweetUser.profile_thumb}" alt="User profile pic">`;
     const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
     const tweetContentP = `<p class="tweet-content">${tweet}</p>`;
     const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
@@ -90,7 +91,7 @@ function loadContent(content_div, get_url) {
            </div>`;
     }
     
-    const mediaDiv = `<div class="media">${mediaBody}</div>`;
+    const mediaDiv = `<div class="media">${tweetUserImg} ${mediaBody}</div>`;
     return mediaDiv;
     
   }
@@ -112,6 +113,7 @@ function loadContent(content_div, get_url) {
     const replyLikesCountSpan = `<small class="text-muted float-left mb-1 mt-n3 ml-1"><b>${replyLikesCount}</b></small>`;
     
     const replyUserSpan = `<a class="text-dark font-weight-bold" href="/user/${replyUser.username}/">${replyUser.get_full_name}</a> <span class="text-muted">@${replyUser.username}</span>`;
+      const replyUserImg = `<img class="mr-3 rounded-circle" width=80px src="${replyUser.profile_thumb}" alt="User profile pic">`;
     const replyTimeSpan = `<span class="text-muted">${replyTime}</span>`;
     const replyContentP = `<p class="reply-content">${replyContent}</p>`;
     
@@ -133,7 +135,7 @@ function loadContent(content_div, get_url) {
                     ${replyLikeLink} ${replyLikesCountSpan} ${replyDeleteLink}
                   </div>`;
     
-    const mediaDiv = `<div class="media">${mediaBody}</div><hr style="margin-top: -5px; margin-bottom: 10px;">`;
+    const mediaDiv = `<div class="media">${replyUserImg} ${mediaBody}</div><hr style="margin-top: -5px; margin-bottom: 10px;">`;
     return mediaDiv;
     
   }
@@ -305,10 +307,13 @@ function loadContent(content_div, get_url) {
         
         const modalDetail = $(".modal-detail");
         
-        modalDetail.find(".modal-title").html(`<span class="text-dark">
+        modalDetail.find(".modal-title").html(`<div class="media">
+  <img class="mr-3 rounded-circle" width="20%" src="${contentUser.profile_thumb}" alt="User Image">
+  <div class="media-body"><span class="text-dark">
     <a class="text-dark font-weight-bold" href="/user/${contentUser.username}/">${contentUser.get_full_name}</a>
   </span><br>
-  <small class="text-muted font-weight-light">@${contentUser.username}</small><br>
+  <small class="text-muted font-weight-light">@${contentUser.username}</small></div></div><br>
+
   <span class="font-weight-bold">
   ${content}</span><br><small class="text-muted">${time}
   </small>`);
