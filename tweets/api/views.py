@@ -1,15 +1,14 @@
-from . import pagination, serializers
+from . import pagination, serializers, permissions as custom_permission
 from .. import models
 
-from rest_framework import filters, viewsets, generics, response, exceptions, views
+from rest_framework import filters, viewsets, generics, response, exceptions, views, permissions
 
 
 class TweetViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TweetSerializer
     queryset = models.Tweet.objects.all()
     pagination_class = pagination.DefaultPagination
-    filter_backends = filters.SearchFilter,
-    search_fields = "content", "user__username", "user__first_name", "user__last_name",
+    permission_classes = custom_permission.ChangeOwnPost, permissions.IsAuthenticatedOrReadOnly,
 
     def perform_create(self, serialiazer):
         return serialiazer.save(user=self.request.user)
@@ -19,6 +18,7 @@ class RetweetViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RetweetSerializer
     queryset = models.Retweet.objects.all()
     pagination_class = pagination.DefaultPagination
+    permission_classes = custom_permission.ChangeOwnPost, permissions.IsAuthenticatedOrReadOnly,
 
     def perform_create(self, serializer):
         parent_tweet_id = self.request.POST.get("parent_tweet")
@@ -48,14 +48,13 @@ class PostListAPIView(generics.ListAPIView):
 
         logged_profile = self.request.user.userprofile
         following_ids = list(logged_profile.following.values_list("pk", flat=True))
-        print(following_ids)
         following_ids.append(logged_profile.user.id)
-        print(following_ids)
         qs = models.Post.objects.filter(user__id__in=following_ids)
         return qs
 
 
 class TweetLikeAPIView(views.APIView):
+    permission_classes = permissions.IsAuthenticated,
 
     def get(self, *args, **kwargs):
         tweet_id = self.kwargs.get("tweet_id")
@@ -69,6 +68,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ReplySerializer
     queryset = models.Reply.objects.all()
     pagination_class = pagination.DefaultPagination
+    permission_classes = custom_permission.ChangeOwnPost, permissions.IsAuthenticatedOrReadOnly,
 
     def get_queryset(self):
         tweet_id = self.request.GET.get("tweet_id", None)
@@ -84,10 +84,10 @@ class ReplyViewSet(viewsets.ModelViewSet):
 
 
 class ReplyLikeAPIView(views.APIView):
+    permission_classes = permissions.IsAuthenticated,
 
     def get(self, *args, **kwargs):
         reply_id = self.kwargs.get("reply_id")
-        print("reply_id == ", reply_id)
         reply_model = models.Reply
         reply = reply_model.objects.get(id=reply_id)
         liked = reply_model.objects.like_toggle(user=self.request.user, reply_obj=reply)
