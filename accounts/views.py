@@ -15,20 +15,27 @@ class RegisterView(CreateView):
 
 def user_posts(request, username):
     user = User.objects.get(username=username)
-    follow_text = models.UserProfile.objects.is_following(user, request.user)
+    follow_text = "Follow"
     logged_user = request.user
-    logged_profile = request.user.userprofile
-    following = list(logged_profile.following.values_list("id", flat=True))
-    following.append(request.user.id)
-    recommended_users = User.objects.exclude(
-        id__in=following
-    ).values(
-        "id",
-        "username",
-        "first_name",
-        "last_name",
-        "userprofile__profile_thumb"
-    ).order_by("?")[:6]
+    if logged_user.is_anonymous:
+        recommended_users = []
+        follow_text = "Login to Follow"
+    else:
+        logged_profile = request.user.userprofile
+        following = list(logged_profile.following.values_list("id", flat=True))
+        following.append(logged_user.id)
+        recommended_users = User.objects.exclude(
+            id__in=following
+        ).values(
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "userprofile__profile_thumb"
+        ).order_by("?")[:6]
+        if user.id in following:
+            follow_text = "Unfollow"
+
     return render(request, "accounts/user_posts.html", {"user": user,
                                                         "follow_text": follow_text,
                                                         "recommended_users": recommended_users})
