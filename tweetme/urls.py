@@ -1,4 +1,5 @@
 from tweets import views
+from accounts import views as acc_view
 
 from django.contrib import admin
 from django.urls import path, include
@@ -8,6 +9,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("tweet/", include("tweets.urls", namespace="tweet")),
+    path("myaccount/", acc_view.profile_update_view, name="myprofile"),
     path("api/", include("tweets.api.urls", namespace="tweet_api")),
     path("user/", include("accounts.urls", namespace="user")),
     path("", views.tweet_list, name="home")
