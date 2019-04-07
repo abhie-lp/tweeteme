@@ -1,8 +1,9 @@
 from . import forms, models
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic.edit import CreateView
 
@@ -45,3 +46,28 @@ def follow_user(request, user):
     user_obj = User.objects.get(username=user)
     follow_status = models.UserProfile.objects.toggle_following(user_obj, request.user)
     return JsonResponse({"follow_status": follow_status})
+
+
+@login_required
+def profile_update_view(request):
+    logged_user = request.user
+    logged_profile = logged_user.userprofile
+
+    if request.method == "POST":
+        post_data = request.POST
+        u_form = forms.UserUpdateForm(request.POST, instance=logged_user)
+        p_form = forms.ProfileUpdateForm(post_data, request.FILES, instance=logged_profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            user = u_form.save(commit=False)
+            new_password = u_form.cleaned_data.get("new_password")
+            if new_password:
+                user.set_password(new_password)
+            user.save()
+            p_form.save()
+            return HttpResponseRedirect(request.path)
+    else:
+        u_form = forms.UserUpdateForm(instance=logged_user)
+        p_form = forms.ProfileUpdateForm(instance=logged_profile)
+
+    return render(request, "accounts/profile_update.html", {"u_form": u_form, "p_form": p_form})
