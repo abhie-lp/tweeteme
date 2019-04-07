@@ -6,6 +6,9 @@ from django.db.models.signals import post_save
 
 from PIL import Image
 
+# Set the email field in User model to unique
+User._meta.get_field("email").__dict__["_unique"] = True
+
 
 def image_dest(instance, filename, thumbnail=False):
     main_directory = "profile"
