@@ -8,6 +8,46 @@
   </script>
 {% endblock extra_script %}
 
+{% block user %}
+  {% if search %}
+    <div id="user_search" class="mx-n3" style="background-color: white;">
+    <h3 class="text-center">Users</h3>
+
+    {% for user in search_following %}
+      <div class="media">
+        <img class="mr-3 img-thumbnail" width="65px" src="/media/{{ user.userprofile__profile_thumb }}" alt="Generic placeholder
+        image">
+        <div class="media-body">
+          <h6 class="mt-0"><a href="{% url 'user:user_posts' user.username %}">
+            {{user.first_name}} {{ user.last_name }}</a> @{{ user.username }}</h6>
+          {% if request.user.username != user.username%}
+            <button data-user="{{ profile.user.username }}" class="follow-user btn btn-sm btn-outline-success" onclick="followUser(this, true)">Unfollow</button>
+          {% endif %}
+        </div>
+      </div><br>
+    {% endfor %}
+
+    {% for user in not_following %}
+      <div class="media">
+        <img class="mr-3 img-thumbnail" width="65px" src="/media/{{ user.userprofile__profile_thumb }}" alt="Generic placeholder
+        image">
+        <div class="media-body">
+          <h6 class="mt-0"><a href="{% url 'user:user_posts' user.username %}">
+            {{user.first_name}} {{ user.last_name }}</a> @{{ user.username }}</h6>
+            <button data-user="{{ profile.user.username }}" class="follow-user btn btn-sm btn-outline-success" onclick="followUser(this, true)">Follow</button>
+        </div>
+      </div><br>
+    {% endfor %}
+
+    {% if no_result %}
+      <p class="text-muted text-center font-weight-bold">No Users found.</p>
+    {% endif %}
+    </div>
+  {% else %}
+    {{block.super}}
+  {% endif%}
+{% endblock user %}
+
 {% block container %}
   <h1>Tweets</h1><br>
   {% if not request.GET.search %}
