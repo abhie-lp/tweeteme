@@ -22,7 +22,7 @@ $("#searchForm").submit(function(e) {
     const address = window.location;
     const this_ = $(this);
     if (this_.serialize().length > 7) {
-        window.location = address.origin + address.pathname + "?" + this_.serialize();
+        window.location = address.origin + "?" + this_.serialize();
     } else {
         window.location = address.origin + "/";
     }
