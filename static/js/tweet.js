@@ -30,19 +30,22 @@ function loadContent(content_div, get_url) {
     }
     
     const tweetId = tweetData.id;
-    const tweet = tweetData.content;
-    const tweetUser = tweetData.user;
+    let tweet = tweetData.content;
+    let tweetUser = tweetData.user;
     const tweetTime = tweetData.date_display;
     const tweetLikes = tweetData.likes;
     const tweetLikesCount = tweetLikes.length;
     const tweetRetweetsCount = tweetData.retweets;
+    
+    tweet = updateHashLinks(tweet);
+    // console.log(tweetContentP);
     
     let likeText = userHasLiked(tweetLikes);
     
     const tweetUserSpan = `<a class="text-dark font-weight-bold" href="/user/${tweetUser.username}/">${tweetUser.get_full_name}</a> <span class="text-muted">@${tweetUser.username}</span>`;
     const tweetUserImg = `<img class="mr-3 rounded-circle" width=80px src="${tweetUser.profile_thumb}" alt="User profile pic">`;
     const tweetTimeSpan = `<span class="text-muted">${tweetTime}</span>`;
-    const tweetContentP = `<p class="tweet-content">${tweet}</p>`;
+    let tweetContentP = `<p class="tweet-content">${tweet}</p>`;
     const tweetViewLink = `<a class="tweet-detail-link" href="">View</a>`;
     let tweetRetweetLink = `<a class="tweet-retweet-link" href="/retweet/">Retweet</a>`;
     const tweetRetweetsCountSpan = `<small class="text-muted"><b>${tweetRetweetsCount}</b></small>`;
@@ -101,12 +104,14 @@ function loadContent(content_div, get_url) {
   function replyFormat(data) {
     const replyId = data.id;
     const replyUser = data.user;
-    const replyContent = data.content;
+    let replyContent = data.content;
     const replyTime = data.date_display;
     const replyLikes = data.likes;
     const replyLikesCount = replyLikes.length;
     
     let likeText = userHasLiked(replyLikes);
+    
+    replyContent = updateHashLinks(replyContent);
     
     let replyDeleteLink = `<a class="content-delete-link float-right text-danger mb-2 mt-n3" href="/delete/">Delete</a>`;
     let replyLikeLink = `<a class="content-like-link float-left mb-1 mt-n3" href="/like/">${likeText}</a>`;
@@ -300,10 +305,12 @@ function loadContent(content_div, get_url) {
         
         console.log("Fetched single tweet");
         const contentUser = data.user;
-        const content = data.content;
+        let content = data.content;
         const time = data.created_on;
         const tweetLikesCount = data.likes.length;
         const retweetsCount = data.retweets;
+        
+        content = updateHashLinks(content);
         
         const modalDetail = $(".modal-detail");
         
@@ -352,7 +359,7 @@ function loadContent(content_div, get_url) {
       thisType = "tweet";
     }
     
-    const thisContent = thisParent.find(`.${thisType}-content`).text();
+    const thisContent = thisParent.find(`.${thisType}-content`).html();
     
     const deleteModal = $(".modal-delete");
     const deleteForm = deleteModal.find("form");
@@ -401,7 +408,7 @@ function loadContent(content_div, get_url) {
     e.preventDefault();
     const this_ = $(this);
     const thisParent = this_.parent();
-    const thisContent = this_.prev().prev().text();
+    const thisContent = this_.prev().prev().html();
     const retweetModal = $(".modal-retweet");
     
     contentID = thisParent.attr("data-id");
