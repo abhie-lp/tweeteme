@@ -95,3 +95,14 @@ function followUser(inst, from_suggestion=false) {
         }
     })
 }
+
+
+/* ###################################### PARSE THE CONTENT WITH # and @ ###################################### */
+function updateHashLinks(text){
+  let hashtagRegex = /(^|\s+)#([\w\d-]+)/g;
+  let usernameRegex = /(^|\s)@([\w\d-]+)/g;
+  let newText;
+  newText = text.replace(hashtagRegex, "$1<a href='/tag/$2/'>#$2</a>");
+  newText = newText.replace(usernameRegex, "$1@<a href='/user/$2/'>$2</a>");
+  return newText;
+}
