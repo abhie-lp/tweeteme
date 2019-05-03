@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "rest_framework",
     "crispy_forms",
+    "tags.apps.TagsConfig",
 ]
 
 MIDDLEWARE = [
