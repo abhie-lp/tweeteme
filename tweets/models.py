@@ -1,7 +1,10 @@
+from tags.models import Tag
+
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
+
+import re
 
 
 class Post(models.Model):
@@ -31,6 +34,7 @@ class Tweet(Post):
     updated_on = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True)
     retweets = models.PositiveIntegerField(default=0)
+    has_tag = models.BooleanField(default=False)
 
     objects = TweetManager()
 
@@ -103,3 +107,27 @@ class Reply(models.Model):
 
     def __str__(self):
         return self.content
+
+
+def new_tweet(sender, instance, created, *args, **kwargs):
+    if created:
+        tags = re.findall(r"#\w+", instance.content)
+
+        for tag in set(tags):
+            obj, created = Tag.objects.get_or_create(title=tag)
+
+            obj.tweets.add(instance)
+
+
+models.signals.post_save.connect(new_tweet, sender=Tweet)
+
+
+def tweet_delete(sender, instance, *args, **kwargs):
+    if instance.has_tag:
+        tags = re.findall(r"#\w+", instance.content)
+
+        for tag in set(tags):
+            Tag.objects.get(title=tag).tweets.remove(instance)
+
+
+models.signals.post_delete.connect(tweet_delete, sender=Tweet)
