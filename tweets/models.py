@@ -116,7 +116,7 @@ def new_tweet(sender, instance, created, *args, **kwargs):
         for tag in set(tags):
             obj, created = Tag.objects.get_or_create(title=tag)
 
-            obj.tweets.add(instance)
+            obj.tweets.add(instance.post_ptr)
 
 
 models.signals.post_save.connect(new_tweet, sender=Tweet)
@@ -127,7 +127,7 @@ def tweet_delete(sender, instance, *args, **kwargs):
         tags = re.findall(r"#\w+", instance.content)
 
         for tag in set(tags):
-            Tag.objects.get(title=tag).tweets.remove(instance)
+            Tag.objects.get(title=tag).tweets.remove(instance.post_ptr)
 
 
 models.signals.post_delete.connect(tweet_delete, sender=Tweet)
