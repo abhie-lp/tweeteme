@@ -55,8 +55,11 @@ class PostListAPIView(generics.ListAPIView):
         logged_profile = self.request.user.userprofile
         following_ids = list(logged_profile.following.values_list("pk", flat=True))
         following_ids.append(logged_profile.user.id)
-        qs = models.Post.objects.filter(user__id__in=following_ids)
-        return qs
+        if len(following_ids) > 1:
+            qs = models.Post.objects.filter(user__id__in=following_ids)
+            return qs
+
+        return super(PostListAPIView, self).get_queryset(*args, **kwargs)
 
 
 class TweetLikeAPIView(views.APIView):
