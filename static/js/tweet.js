@@ -141,10 +141,9 @@ function loadContent(content_div, get_url) {
   /* ################################### ALL REPLIES FOR THE TWEET ################################ */
   function getReplies(tweetID) {
     console.log("Getting replies for ", tweetID);
-    completeURL = get_url + "model/reply/";
     
     $.ajax({
-      url: completeURL,
+      url: "/api/model/reply/",
       method: "GET",
       data: {"tweet_id": tweetID},
       success: function(data) {
@@ -166,11 +165,9 @@ function loadContent(content_div, get_url) {
     event.preventDefault();
     const this_ = $(this);
     const tweetID = this_.parent().attr("data-id");
-    completeURL = get_url + "model/tweet/" + tweetID + "/";
-    
     
     $.ajax({
-      url: completeURL,
+      url: "/api/model/tweet/" + tweetID + "/",
       method: "GET",
       success: function(data) {
         contentID = tweetID;
@@ -261,9 +258,9 @@ function loadContent(content_div, get_url) {
   $(document.body).on("submit", ".modal-delete form.delete", function(e) {
     e.preventDefault();
     const csrf = $(this).children("input").attr("value");
-    completeURL = get_url + `model/${contentType}/${contentID}/`;
     
-    $.ajax(completeURL, {
+    $.ajax({
+      url: `/api/model/${contentType}/${contentID}/`,
       method: "DELETE",
       headers: {"X-CSRFToken": csrf},
       content: "application/json",
@@ -307,8 +304,9 @@ function loadContent(content_div, get_url) {
     e.preventDefault();
     const parent_tweet = contentID;
     const csrf = $(this).children("input").attr("value");
-    completeURL = get_url + "model/retweet/";
-    $.ajax(completeURL, {
+
+    $.ajax({
+      url: "/api/model/retweet/",
       method: "POST",
       data: $(this).serialize() + "&parent_tweet=" + parent_tweet,
       // headers: {"X-CSRFToken": csrf},
@@ -338,10 +336,10 @@ function loadContent(content_div, get_url) {
     console.log("thisType == ", thisType);
     console.log("thisID == ", thisID);
     console.log("Like", thisID);
-    completeURL = get_url + `like/${thisType}/${thisID}/`;
     const likeCount = Number(this_.next().text());
     
-    $.ajax(completeURL, {
+    $.ajax({
+      url: `/api/like/${thisType}/${thisID}/`,
       method: "GET",
       success: function(data) {
         if (data.liked) {
@@ -364,10 +362,10 @@ function loadContent(content_div, get_url) {
   $(".modal-detail form").submit(function(e) {
     e.preventDefault();
     console.log("Replying to ", contentID, " tweet");
-    completeURL = get_url + "model/reply/";
     const this_ = $(this);
+
     $.ajax({
-      url: completeURL,
+      url: "/api/model/reply/",
       method: "POST",
       data: this_.serialize() + `&tweet_id=${contentID}`,
       success: function(data) {
