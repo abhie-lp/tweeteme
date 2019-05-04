@@ -16,17 +16,10 @@ def tweet_list(request):
 
     following = list(logged_profile.following.values_list("id", flat=True))
     following.append(logged_user.id)
-    recommended_users = User.objects.exclude(
-                                            id__in=following
-                                            ).values("id",
-                                                     "username",
-                                                     "first_name",
-                                                     "last_name",
-                                                     "userprofile__profile_thumb").order_by("?")[:6]
-
-    context["recommended_users"] = recommended_users
 
     search = request.GET.get("search")
+
+    # Search results of the Users
 
     if search:
         search_results = User.objects.filter(

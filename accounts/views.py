@@ -19,27 +19,17 @@ def user_posts(request, username):
     follow_text = "Follow"
     logged_user = request.user
     if logged_user.is_anonymous:
-        recommended_users = []
         follow_text = "Login to Follow"
     else:
         logged_profile = request.user.userprofile
         following = list(logged_profile.following.values_list("id", flat=True))
-        following.append(logged_user.id)
-        recommended_users = User.objects.exclude(
-            id__in=following
-        ).values(
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-            "userprofile__profile_thumb"
-        ).order_by("?")[:6]
         if user.id in following:
             follow_text = "Unfollow"
 
-    return render(request, "accounts/user_posts.html", {"user": user,
-                                                        "follow_text": follow_text,
-                                                        "recommended_users": recommended_users})
+    return render(request, "accounts/user_posts.html", {
+        "user": user,
+        "follow_text": follow_text
+    })
 
 
 def follow_user(request, user):
