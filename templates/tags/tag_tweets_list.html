@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block extra_script %}
+  <script>
+    loadContent("#tag-tweet-container", "/api/tag/{{ title }}")
+  </script>
+{% endblock extra_script %}
+
+{% block user %}
+  <div class="card mx-n3">
+    <div class="card-header text-primary">
+      <h1>#{{ title }}</h1>
+      <p class="text-muted">Tweets count: {{ tweets_count }}</p>
+    </div>
+  </div>
+{% endblock user %}
+
+{% block container %}
+  <div id="tag-tweet-container">
+  </div>
+  <p ><a class="loadmore" href="" data-type="tweet">Load more</a></p>
+{% endblock container %}
