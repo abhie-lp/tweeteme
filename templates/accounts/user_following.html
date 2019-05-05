@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block user %}
+  {% include "user_detail.html" with for_user=user %}
+{% endblock user %}
+
+{% block container %}
+  <h1 class="text-center">Following</h1>
+  {% for user in following %}
+  <div class="media">
+    <img style="display: block" src="/media/{{user.userprofile__profile_thumb}}" class="mr-3" width="10%">
+    <div class="media-body" style="">
+      <a class="font-weight-bold" href="{% url 'user:user_posts' user.username %}">
+        {{user.first_name}} {{ user.last_name }}
+      </a>
+      <span class="text-muted">@{{ user.username }}</span>
+      <button style="display: block;" class="btn btn-sm btn-outline-secondary" onclick="followUser(this)">{{user.follow_text}}</button>
+    </div>
+</div><br>
+
+  {% endfor %}
+{% endblock container %}

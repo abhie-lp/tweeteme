@@ -33,7 +33,7 @@
     let mediaBody = null;
     
     if (!loggedUser) {
-      const login_url = "/user/login/";
+      const login_url = "/user/login/?next=" + currentURL.pathname;
       tweetRetweetLink = tweetRetweetLink.replace("tweet-retweet-link", "login-to-retweet");
       tweetRetweetLink = tweetRetweetLink.replace("/retweet/", login_url);
       tweetLikeLink = tweetLikeLink.replace("content-like-link", "login-to-like");

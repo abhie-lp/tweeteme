@@ -1,11 +1,102 @@
 from . import forms, models
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.http.response import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic.edit import CreateView
+
+
+def get_follow_text(request, user_id):
+    follow_text = "Follow"
+    logged_user = request.user
+    if logged_user.is_anonymous:
+        follow_text = "Login to Follow"
+    else:
+        logged_profile = request.user.userprofile
+        following = list(logged_profile.following.values_list("id", flat=True))
+        if user_id in following:
+            follow_text = "Unfollow"
+    return follow_text
+
+
+def get_user_followers(request, username):
+    url_user = User.objects.get(username=username)
+
+    logged_user = request.user
+
+    user_followers = url_user.following_me.values("id",
+                                                  "user__username",
+                                                  "user__first_name",
+                                                  "user__last_name",
+                                                  "profile_thumb")
+
+    # for checking whether the requested user is in the following of logged user
+    url_follow_text = "Follow"
+
+    if not logged_user.is_anonymous:
+
+        logged_profile = logged_user.userprofile
+        logged_following = logged_profile.following.values_list("id", flat=True)
+
+        for user in user_followers:
+            follow_text = "Follow"
+            user["follow_text"] = follow_text
+            if user["id"] in logged_following:
+                follow_text = "Unfollow"
+                user["follow_text"] = follow_text
+
+        if url_user.id in logged_following:
+            url_follow_text = "Unfollow"
+    else:
+        for user in user_followers:
+            user["follow_text"] = "Login to Follow"
+        url_follow_text = "Login to Follow"
+
+    return render(request, "accounts/user_followers.html", {
+        "url_follow_text": url_follow_text,
+        "followers": user_followers,
+        "url_user": url_user,
+    })
+
+
+def get_user_following(request, username):
+    logged_user = request.user
+    url_user = User.objects.get(username=username)
+    user_profile = models.UserProfile.objects.get(user=url_user)
+    following = user_profile.following.values("id",
+                                              "username",
+                                              "first_name",
+                                              "last_name",
+                                              "userprofile__profile_thumb")
+
+    # for checking whether the requested user is in the following of logged user
+    url_follow_text = "Follow"
+
+    if not logged_user.is_anonymous:
+        logged_profile = logged_user.userprofile
+        logged_following = logged_profile.following.values_list("pk", flat=True)
+
+        for user in following:
+            follow_text = "Follow"
+            user["follow_text"] = follow_text
+
+            if user["id"] in logged_following:
+                follow_text = "Unfollow"
+                user["follow_text"] = follow_text
+
+        if url_user.id in logged_following:
+            url_follow_text = "Unfollow"
+    else:
+        for user in following:
+            user["follow_text"] = "Login to Follow"
+        url_follow_text = "Login to Follow"
+
+    return render(request, "accounts/user_following.html", {
+        "following": following,
+        "user": url_user,
+        "follow_text": url_follow_text})
 
 
 class RegisterView(CreateView):
@@ -16,19 +107,10 @@ class RegisterView(CreateView):
 
 def user_posts(request, username):
     user = User.objects.get(username=username)
-    follow_text = "Follow"
-    logged_user = request.user
-    if logged_user.is_anonymous:
-        follow_text = "Login to Follow"
-    else:
-        logged_profile = request.user.userprofile
-        following = list(logged_profile.following.values_list("id", flat=True))
-        if user.id in following:
-            follow_text = "Unfollow"
 
     return render(request, "accounts/user_posts.html", {
         "user": user,
-        "follow_text": follow_text
+        "follow_text": get_follow_text(request, user.id)
     })
 
 

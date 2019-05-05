@@ -12,16 +12,40 @@
     <table class="table table-borderless text-center" style="margin-bottom: -20px;">
       <thead class="text-muted">
         <tr class="mb-n5">
-          <th><small class="font-weight-bolder">Tweet</small></th>
-          <th><small class="font-weight-bolder">Following</small></th>
-          <th><small class="font-weight-bolder">Followers</small></th>
+          <th><small class="font-weight-bolder">
+            <a class="text-muted" href="{% url 'user:user_posts' for_user.username %}">
+              Tweets
+            </a>
+          </small></th>
+          <th><small class="font-weight-bolder">
+            <a class="text-muted" href="{% url 'user:user_following' for_user.username %}">
+              Following
+            </a>
+          </small></th>
+          <th><small class="font-weight-bolder">
+            <a class="text-muted" href="{% url 'user:user_followers' for_user.username %}">
+              Followers
+            </a>
+          </small></th>
         </tr>
       </thead>
       <tbody class="text-primary font-weight-bolder pt-n4">
         <tr>
-          <td id="posts-count">{{ for_user.post_set.count }}</td>
-          <td id="following-count">{{ for_user.userprofile.following.count }}</td>
-          <td id="followers-count">{{ for_user.following_me.count }}</td>
+          <td id="posts-count">
+            <a href="{% url 'user:user_posts' for_user.username %}">
+              {{ for_user.post_set.count }}
+            </a>
+          </td>
+          <td id="following-count">
+            <a href="{% url 'user:user_following' for_user.username %}">
+              {{ for_user.userprofile.following.count }}
+            </a>
+          </td>
+          <td id="followers-count">
+            <a href="{% url 'user:user_followers' for_user.username %}">
+              {{ for_user.following_me.count }}
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>

@@ -65,10 +65,13 @@ function userHasLiked(likeArray) {
 /* ###################################### HANDLE THE FOLLOW CLICK ###################################### */
 function followUser(inst, from_suggestion=false) {
     console.log("Follow request");
+    if (!loggedUser) {
+        window.location = "/user/login/?next=" + window.location.pathname;
+    }
     const this_ = $(inst);
     const user = this_.prev().text().slice(1,);
     const followersCount = $("#followers-count");
-    let completeURL = currentURL.pathname + "follow/";
+    let completeURL = "/user/" + user + "/" + "follow/";
     
     if (from_suggestion) {
         const thisHref = this_.parent().find("a").attr("href");
