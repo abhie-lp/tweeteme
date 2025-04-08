@@ -27,7 +27,6 @@ def thumb_dest(instance, filename):
 
 
 class UserProfileManager(models.Manager):
-
     def toggle_following(self, user, logged_user):
         user_following = logged_user.userprofile.following
         follow_status = False
@@ -52,10 +51,12 @@ class UserProfileManager(models.Manager):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(upload_to=image_dest, default="default.jpg")
-    profile_thumb = models.ImageField(upload_to=thumb_dest, default="default.jpg", blank=True)
+    profile_thumb = models.ImageField(
+        upload_to=thumb_dest, default="default.jpg", blank=True
+    )
     following = models.ManyToManyField(User, blank=True, related_name="following_me")
 
-    objects = UserProfileManager()
+    # objects = UserProfileManager()
 
     def __init__(self, *args, **kwargs):
         super(UserProfile, self).__init__(*args, **kwargs)
@@ -78,7 +79,9 @@ class UserProfile(models.Model):
                     self.__curr_thumb.delete(False)  # Delete the current thumbnail
                     self.profile_pic = new  # Assign the new image to self.profile
 
-                self.profile_thumb.save("thumb.jpg", ContentFile(new.read()), False)  # Assign same to thumbnail
+                self.profile_thumb.save(
+                    "thumb.jpg", ContentFile(new.read()), False
+                )  # Assign same to thumbnail
 
                 # Save the changes to model
                 super(UserProfile, self).save(*args, **kwargs)

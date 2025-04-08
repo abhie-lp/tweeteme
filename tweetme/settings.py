@@ -126,4 +126,3 @@ LOGIN_REDIRECT_URL = "home"
 LOGOUT_URL = "user:logout"
 LOGOUT_REDIRECT_URL = "user:login"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
